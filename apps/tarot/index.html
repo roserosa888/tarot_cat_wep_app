@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ไพ่ทาโร่ต์ — อ่านดวงชะตาด้วยตัวเอง</title>
+  <meta name="description" content="ไพ่ทาโร่ต์ภาษาไทย อ่านดวงชะตาด้วยตัวเอง สำรวจหมวดชีวิต การเงิน การงาน ความรัก ตัวตน ครอบครัว" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="stars" id="stars"></div>
+  <div class="container">
+
+    <!-- Disclaimer -->
+    <div class="disclaimer">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      ไพ่ทาโร่นี้มีไว้เพื่อสำรวจตัวเองเท่านั้น ไม่ใช่คำทำนายหรือคำแนะนำในการตัดสินใจ กรุณาใช้วิจารณญาณของตัวเอง
+    </div>
+
+    <!-- Screen: Category Selection -->
+    <div id="screen-select" class="screen">
+      <div class="screen-inner">
+        <div class="crystal-orb">
+          <div class="orb-inner"></div>
+          <div class="orb-ring orb-ring-1"></div>
+          <div class="orb-ring orb-ring-2"></div>
+        </div>
+        <h1 class="main-title">ไพ่ทาโร่ต์</h1>
+        <p class="main-subtitle">เลือกหมวดชีวิตที่ต้องการสำรวจ 10 คำถาม</p>
+        <div class="category-grid" id="category-grid">
+          <button class="category-card" data-cat="การงาน">
+            <div class="cat-icon">⚔️</div>
+            <span>การงาน</span>
+          </button>
+          <button class="category-card" data-cat="ความรัก">
+            <div class="cat-icon">💜</div>
+            <span>ความรัก</span>
+          </button>
+          <button class="category-card" data-cat="การเงิน">
+            <div class="cat-icon">💰</div>
+            <span>การเงิน</span>
+          </button>
+          <button class="category-card" data-cat="ตัวตน">
+            <div class="cat-icon">🦋</div>
+            <span>ตัวตน</span>
+          </button>
+          <button class="category-card" data-cat="ครอบครัว">
+            <div class="cat-icon">🏠</div>
+            <span>ครอบครัว</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen: Question -->
+    <div id="screen-question" class="screen hidden">
+      <div class="screen-inner question-inner">
+        <div class="progress-header">
+          <div class="progress-bar-wrap">
+            <div class="progress-bar" id="progress-bar"></div>
+          </div>
+          <div class="progress-label" id="progress-label">คำถามที่ 1 / 10</div>
+          <div class="category-badge" id="category-badge"></div>
+        </div>
+
+        <div class="question-card" id="question-card">
+          <div class="question-number" id="question-number">คำถามที่ 1</div>
+          <h2 class="question-text" id="question-text"></h2>
+          <p class="question-context" id="question-context"></p>
+          <div class="choice-a" id="choice-a"></div>
+          <div class="choice-b" id="choice-b"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen: Summary -->
+    <div id="screen-summary" class="screen hidden">
+      <div class="screen-inner summary-inner">
+        <div class="summary-crystal">
+          <div class="summary-orb-inner"></div>
+        </div>
+        <h2 class="summary-title">การอ่านดวงชะตาของคุณ</h2>
+        <p class="summary-category-label" id="summary-category-label"></p>
+
+        <div class="summary-single-card-wrap">
+          <img id="summary-card-img" src="" alt="ไพ่ทาโร่ต์" />
+        </div>
+
+        <h3 class="summary-card-name" id="summary-card-name"></h3>
+        <div class="summary-reason" id="summary-reason"></div>
+        <div class="summary-pattern" id="summary-pattern"></div>
+
+        <button class="btn-glow" id="restart-btn">เริ่มใหม่</button>
+      </div>
+    </div>
+
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
