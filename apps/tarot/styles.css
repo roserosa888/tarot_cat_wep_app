@@ -101,6 +101,10 @@ body {
 .screen {
   width: 100%;
   max-width: 700px;
+  min-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   animation: fadeUp 0.5s ease both;
 }
 
@@ -189,7 +193,7 @@ body {
    ================================================ */
 .category-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
   width: 100%;
   margin-top: 0.5rem;
@@ -222,6 +226,17 @@ body {
 .category-card:active { transform: translateY(-1px); }
 
 .cat-icon { font-size: 2rem; }
+
+/* ================================================
+   QUESTION SCREEN
+   ================================================ */
+#screen-question {
+  justify-content: flex-start;
+}
+
+#screen-question .question-inner {
+  padding-top: 1.5rem;
+}
 
 /* ================================================
    PROGRESS HEADER
