@@ -563,57 +563,132 @@ function selectChoice(choice, question, card) {
 }
 
 /* ================================================
-   SUMMARY CARD DETERMINATION
+   SCORING & LEVEL SYSTEM
+   A = +1 point, B = 0 point. Max = 10
+   Level:
+     0–2  → 1
+     3–5  → 2
+     6–7  → 3
+     8–10 → 4
    ================================================ */
-function countStreak(cards, label) {
-  let max = 0, cur = 0;
-  for (const c of cards) {
-    if (c.choiceLabel === label) { cur++; max = Math.max(max, cur); }
-    else cur = 0;
-  }
-  return max;
+function computeScore(cards) {
+  return cards.reduce((sum, c) => sum + (c.choiceLabel === 'A' ? 1 : 0), 0);
 }
 
-function determineSummaryCard(category, cards) {
-  const aCount = cards.filter(c => c.choiceLabel === 'A').length;
-  const bCount = cards.filter(c => c.choiceLabel === 'B').length;
-  const aStreak = countStreak(cards, 'A');
-  const bStreak = countStreak(cards, 'B');
+function computeLevel(score) {
+  if (score <= 2) return 1;
+  if (score <= 5) return 2;
+  if (score <= 7) return 3;
+  return 4; // 8–10
+}
 
-  const isMostlyA = aCount > bCount;
-  const isMostlyB = bCount > aCount;
-  const strongA  = aStreak >= 4;
-  const strongB  = bStreak >= 4;
+/* ================================================
+   5-CARD SPREAD POSITION LABELS
+   ================================================ */
+const POSITION_LABELS = ['แกนหลัก', 'ความท้าทาย', 'รากฐาน', 'สนับสนุน', 'ผลลัพธ์'];
+const POSITION_CONTEXTS = [
+  'นี่คือไพ่ที่สะท้อนแกนหลักของการอ่านดวงคุณ — ไพ่นี้บอกถึงพลังหลักที่ขับเคลื่อนคุณ',
+  'นี่คือไพ่แห่งความท้าทาย — ไพ่นี้บอกถึงสิ่งที่คุณต้องเผชิญหรือให้ความสนใจ',
+  'นี่คือไพ่แห่งรากฐาน — ไพ่นี้บอกถึงแรงผลักดันพื้นฐานของคุณ',
+  'นี่คือไพ่แห่งการสนับสนุน — ไพ่นี้บอกถึงพลังที่คอยช่วยเหลือคุณอยู่',
+  'นี่คือไพ่แห่งผลลัพธ์ — ไพ่นี้บอกถึงทิศทางที่คุณกำลังมุ่งไป',
+];
 
-  const map = {
-    'การงาน': () => {
-      if (isMostlyA || strongA) return 7;   // Chariot — bold career
-      if (isMostlyB || strongB) return 9;   // Hermit — step back
-      return 4;                             // Emperor — balanced
-    },
-    'ความรัก': () => {
-      if (isMostlyA || strongA) return 19;  // Sun — open heart
-      if (isMostlyB || strongB) return 18;  // Moon — cautious love
-      return 6;                             // Lovers — balance
-    },
-    'การเงิน': () => {
-      if (isMostlyA || strongA) return 10;  // Wheel of Fortune — bold move
-      if (isMostlyB || strongB) return 4;   // Emperor — stable savings
-      return 14;                             // Temperance — balance
-    },
-    'ตัวตน': () => {
-      if (isMostlyA || strongA) return 13;  // Death — transformation
-      if (isMostlyB || strongB) return 17;  // Star — self-reflection
-      return 2;                              // High Priestess — intuition
-    },
-    'ครอบครัว': () => {
-      if (isMostlyA || strongA) return 3;   // Empress — nurturing
-      if (isMostlyB || strongB) return 12;  // Hanged Cat — letting go
-      return 5;                             // Hierophant — tradition
+/* ================================================
+   5-CARD SPREAD SELECTION
+   Pattern-aware — deterministic based on answer pattern
+   ================================================ */
+function select5CardSpread(cards, category, level) {
+  const analysis = analyzePattern(cards);
+  const { aCount, bCount, maxAStreak, maxBStreak, isClustered, dominantChoice } = analysis;
+
+  // Card 0 — Primary (based on dominant choice)
+  let card0;
+  if (dominantChoice === 'A') {
+    const highAction = [7, 10, 13, 19];
+    card0 = highAction[aCount % highAction.length];
+  } else if (dominantChoice === 'B') {
+    const contemplative = [2, 9, 12];
+    card0 = contemplative[bCount % contemplative.length];
+  } else {
+    const balanced = [14, 21];
+    card0 = balanced[aCount % balanced.length];
+  }
+
+  // Card 1 — Challenge (based on clustering)
+  let card1 = isClustered
+    ? [13, 16][aCount % 2]
+    : [18, 15][bCount % 2];
+
+  // Card 2 — Foundation (based on longest streak)
+  let card2 = maxAStreak > maxBStreak
+    ? [7, 1, 4][maxAStreak % 3]
+    : [9, 2, 5][maxBStreak % 3];
+
+  // Card 3 — Support (category-driven)
+  const catSupport = { 'การงาน': 1, 'ความรัก': 6, 'การเงิน': 10, 'ตัวตน': 17, 'ครอบครัว': 3 };
+  let card3 = catSupport[category] || 6;
+
+  // Card 4 — Outcome (based on level)
+  let card4 = level >= 3
+    ? [17, 19, 21][level % 3]
+    : [3, 4, 5][level % 3];
+
+  return [card0, card1, card2, card3, card4];
+}
+
+/* ================================================
+   PER-CARD REASONING GENERATION
+   ================================================ */
+function generateCardReasoning(cardIndex, position, analysis, level, score) {
+  const { aCount, bCount, maxAStreak, maxBStreak, isClustered, isAlternating } = analysis;
+  const aPct = Math.round((aCount / 10) * 100);
+  const posLabel = POSITION_LABELS[position];
+  const posContext = POSITION_CONTEXTS[position];
+  const levelLabel = ['', 'ระดับ 1 — พลังต่ำ', 'ระดับ 2 — พลังปานกลาง', 'ระดับ 3 — พลังสูง', 'ระดับ 4 — พลังสูงสุด'][level];
+
+  let dynamicPart = '';
+
+  if (position === 0) {
+    // Primary card — driven by A count
+    if (aCount >= 8) {
+      dynamicPart = `จากคำตอบของคุณ คุณเลือก A ถึง <strong>${aCount} จาก 10 คำถาม (${aPct}%)</strong> — นี่คือแนวโน้มที่ชัดเจนมาก ไพ่ ${deck[cardIndex].name} จึงเป็นตัวแทนของ<strong>พลังหลักที่ขับเคลื่อนคุณในช่วงนี้</strong>`;
+    } else if (aCount >= 5) {
+      dynamicPart = `คุณเลือก A <strong>${aCount} ครั้ง</strong> จาก 10 คำถาม (${aPct}%) แสดงถึง<strong>ความสมดุลระหว่างความกล้าและความระมัดระวัง</strong> ไพ่ ${deck[cardIndex].name} จึงสะท้อนแกนกลางของคุณได้ดี`;
+    } else {
+      dynamicPart = `คุณเลือก A เพียง <strong>${aCount} ครั้ง</strong> (${aPct}%) แสดงถึง<strong>แนวโน้มที่ระมัดระวังแต่มีจุดยืน</strong> ไพ่ ${deck[cardIndex].name} จึงตอบสนองพลังภายในของคุณได้อย่างเหมาะสม`;
     }
-  };
+  } else if (position === 1) {
+    // Challenge card — driven by clustering
+    if (isClustered) {
+      dynamicPart = `รูปแบบคำตอบของคุณมี<strong>การรวมกลุ่มชัดเจน</strong> (A ติดกัน ${maxAStreak} ครั้ง หรือ B ติดกัน ${maxBStreak} ครั้ง) ซึ่งบ่งบอกถึง<strong>ช่วงเวลาของการเปลี่ยนผ่าน</strong> ไพ่ ${deck[cardIndex].name} จึงปรากฏเป็นความท้าทายที่ต้องตระหนัก`;
+    } else if (isAlternating) {
+      dynamicPart = `คุณสลับไปมาระหว่าง A และ B อย่างสม่ำเสมอ — นี่คือ<strong>ความสมดุลที่มีชีวิตชีวา</strong> ไพ่ ${deck[cardIndex].name} จึงเป็นความท้าทายในการรักษาจังหวะนี้`;
+    } else {
+      dynamicPart = `จากการวิเคราะห์รูปแบบ คุณมีแนวโน้มที่<strong>หลากหลายแต่มีทิศทาง</strong> ไพ่ ${deck[cardIndex].name} จึงปรากฏเป็นสิ่งที่ควรให้ความสนใจ`;
+    }
+  } else if (position === 2) {
+    // Foundation — driven by longest streak
+    if (maxAStreak > maxBStreak) {
+      dynamicPart = `คุณมีการเลือก A ติดต่อกันสูงสุด <strong>${maxAStreak} ครั้ง</strong> แสดงถึง<strong>ความมุ่งมั่นและพลังในการลงมือทำ</strong> ไพ่ ${deck[cardIndex].name} จึงเป็นรากฐานที่คอยหล่อเลี้ยงคุณ`;
+    } else {
+      dynamicPart = `คุณมีการเลือก B ติดต่อกันสูงสุด <strong>${maxBStreak} ครั้ง</strong> แสดงถึง<strong>การไตร่ตรองและความระมัดระวัง</strong> ไพ่ ${deck[cardIndex].name} จึงเป็นรากฐานที่คอยประคองคุณ`;
+    }
+  } else if (position === 3) {
+    // Support — category-driven
+    dynamicPart = `ไพ่นี้ทำหน้าที่เป็น<strong>พลังสนับสนุน</strong>ในการอ่านดวงของคุณ ในหมวด ${currentCategory} ไพ่ ${deck[cardIndex].name} จึงคอยเสริมแรงให้คุณในเส้นทางที่เลือก`;
+  } else {
+    // Outcome — driven by level
+    if (level >= 3) {
+      dynamicPart = `ด้วยระดับ <strong>${level} (score ${score}/10)</strong> คุณมี<strong>พลังและแรงผลักดันสูง</strong> ไพ่ ${deck[cardIndex].name} จึงเป็นผลลัพธ์ที่คาดหวังได้ — คุณกำลังมุ่งสู่ความสำเร็จและการเติบโต`;
+    } else {
+      dynamicPart = `ด้วยระดับ <strong>${level} (score ${score}/10)</strong> คุณอยู่ใน<strong>ช่วงของการสะสมและเตรียมพร้อม</strong> ไพ่ ${deck[cardIndex].name} จึงเป็นผลลัพธ์ที่บ่งบอก<strong>เส้นทางแห่งการค่อยๆ เติบโตอย่างมั่นคง</strong>`;
+    }
+  }
 
-  return (map[category] || (() => 0))();
+  return `<div class="card-reasoning-header">${posLabel} — ${deck[cardIndex].name}</div>
+<div class="card-reasoning-context">${posContext}</div>
+<div class="card-reasoning-body">${dynamicPart} <strong>${levelLabel}</strong> · ${aCount} A · ${bCount} B</div>`;
 }
 
 /* ================================================
