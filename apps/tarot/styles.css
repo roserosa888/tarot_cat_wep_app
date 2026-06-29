@@ -441,37 +441,57 @@ body {
 }
 
 /* ================================================
-   SUMMARY SECTIONS
+   SUMMARY NARRATIVE — 4 rows in 1 block
    ================================================ */
-.summary-section {
+.summary-narrative {
   width: 100%;
-  padding: 1rem 1.2rem;
+  background: linear-gradient(160deg, rgba(139,92,246,0.08) 0%, rgba(30,0,60,0.3) 100%);
+  border: 1px solid rgba(139,92,246,0.2);
   border-radius: var(--radius);
+  padding: 1.8rem;
   font-size: clamp(0.88rem, 3.5vw, 1rem);
   color: rgba(255,255,255,0.85);
   line-height: 1.7;
   animation: fadeUp 0.7s ease 0.3s both;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-top: 1.5rem;
 }
 
-.summary-section-label {
+.narrative-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+.narrative-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.narrative-label {
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  opacity: 0.65;
-  margin-bottom: 0.35rem;
+  opacity: 0.6;
+  min-width: 70px;
+  padding-top: 0.1rem;
+  flex-shrink: 0;
 }
 
-.summary-meaning    { background: rgba(200,169,110,0.08); border-left: 3px solid #c8a96e; }
-.summary-meaning    .summary-section-label { color: #c8a96e; }
+.narrative-text {
+  flex: 1;
+}
 
-.summary-pros       { background: rgba(126,200,164,0.08); border-left: 3px solid #7ec8a4; }
-.summary-pros      .summary-section-label { color: #7ec8a4; }
+.narrative-meaning    .narrative-label { color: #c8a96e; }
+.narrative-pros      .narrative-label { color: #7ec8a4; }
+.narrative-recommended .narrative-label { color: #c8a96e; }
+.narrative-cons      .narrative-label { color: #e07a7a; }
 
-.summary-recommended { background: rgba(200,169,110,0.08); border-left: 3px solid #c8a96e; }
-.summary-recommended .summary-section-label { color: #c8a96e; }
-
-.summary-cons      { background: rgba(224,122,122,0.08); border-left: 3px solid #e07a7a; }
-.summary-cons      .summary-section-label { color: #e07a7a; }
+.narrative-text strong { color: var(--gold); font-weight: 600; }
 
 
 
@@ -504,5 +524,5 @@ body {
   .category-card { padding: 1.1rem 0.5rem; font-size: 0.88rem; }
   .question-card { padding: 1.5rem 1.2rem; }
   #summary-card-img { width: 170px; }
-  .summary-section { padding: 0.9rem 1rem; }
+  .summary-narrative { padding: 1.3rem; }
 }

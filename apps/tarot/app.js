@@ -580,13 +580,26 @@ function generateNarrative(category, cardIdx, cards) {
   const score = cards.reduce((s, c) => s + (c.choiceLabel === 'A' ? 0 : 1), 0);
   const outcomeIdx = scoreToOutcomeIndex(score);
   const nd = narrativeData[category][outcomeIdx];
+  const recommended = `ไพ่ประจำตัวของคุณ ก็คือ <strong>${deck[cardIdx].name}</strong>`;
 
-  return {
-    meaning:     nd.meaning,
-    recommended: deck[cardIdx].name,
-    pros:        nd.pros,
-    cons:       nd.cons
-  };
+  return `
+    <div class="narrative-row narrative-meaning">
+      <span class="narrative-label">ความหมาย</span>
+      <span class="narrative-text">${nd.meaning}</span>
+    </div>
+    <div class="narrative-row narrative-pros">
+      <span class="narrative-label">ข้อดี</span>
+      <span class="narrative-text">${nd.pros}</span>
+    </div>
+    <div class="narrative-row narrative-recommended">
+      <span class="narrative-label">ไพ่แนะนำ</span>
+      <span class="narrative-text">${recommended}</span>
+    </div>
+    <div class="narrative-row narrative-cons">
+      <span class="narrative-label">ข้อเสีย</span>
+      <span class="narrative-text">${nd.cons}</span>
+    </div>
+  `;
 }
 
 /* ================================================
@@ -737,11 +750,7 @@ function showSummary() {
 
   $('summary-card-name').textContent = deck[cardIdx].name;
 
-  const { meaning, recommended, pros, cons } = generateNarrative(currentCategory, cardIdx, drawnCards);
-  $('summary-meaning').textContent       = meaning;
-  $('summary-pros').textContent          = pros;
-  $('summary-recommended').textContent   = recommended;
-  $('summary-cons').textContent          = cons;
+  $('summary-narrative').innerHTML = generateNarrative(currentCategory, cardIdx, drawnCards);
 }
 
 /* ================================================
