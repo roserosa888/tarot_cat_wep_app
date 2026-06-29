@@ -435,7 +435,7 @@ function analyzePattern(cards) {
 function generateNarrative(category, cardIndex, cards) {
   const score = cards.reduce((s, c) => s + (c.choiceLabel === 'A' ? 0 : 1), 0);
   const analysis = analyzePattern(cards);
-  const { pattern, aCount, bCount, isAlternating, isClustered, dominantChoice } = analysis;
+  const { pattern, isAlternating, isClustered, dominantChoice } = analysis;
   const cardName = deck[cardIndex].name;
   const outcomeIdx = scoreToOutcomeIndex(score);
   const outcomeLabel = ['', 'ที่ 1', 'ที่ 2', 'ที่ 3', 'ที่ 4', 'ที่ 5'][outcomeIdx + 1];
@@ -444,39 +444,46 @@ function generateNarrative(category, cardIndex, cards) {
   let p1 = '';
   if (isClustered) {
     const dominant = dominantChoice === 'A'
-      ? `คุณมี<strong>แนวโน้มที่ชัดเจนในการเลือกทาง A</strong> คุณไม่ใช่คนที่ตัดสินใจแบบหว่าวๆ แต่มีจุดยืนที่ชัดเจน — นี่บ่งบอกว่าคุณมี<strong>ความเข้าใจในตัวเองลึกซึ้ง</strong> และไม่ยอมเสียสิ่งที่มีอยู่ง่ายๆ`
-      : `คุณมี<strong>แนวโน้มที่ชัดเจนในการเลือกทาง B</strong> — คุณพร้อมลงมือทำและเปิดรับการเปลี่ยนแปลง ไม่ยอมนั่งรอให้โอกาสหลุดไป`;
-    p1 = `<strong>รูปแบบคำตอบของคุณ: ${pattern}</strong> — ${dominant}`;
+      ? `คุณไม่ใช่คนที่ตัดสินใจแบบหว่าวๆ แต่มีจุดยืนที่ชัดเจน — นี่บ่งบอกว่าคุณมี<strong>ความเข้าใจในตัวเองลึกซึ้ง</strong> และไม่ยอมเสียสิ่งที่มีอยู่ง่ายๆ`
+      : `คุณพร้อมลงมือทำและเปิดรับการเปลี่ยนแปลง ไม่ยอมนั่งรอให้โอกาสหลุดไป`;
+    p1 = dominant;
   } else if (isAlternating) {
-    p1 = `<strong>รูปแบบคำตอบของคุณ: ${pattern}</strong> — คุณสลับไปมาระหว่างสองทางเลือกอย่างสม่ำเสมอ นี่บ่งบอกว่าคุณมี<strong>ความสามารถในการมองเห็นสองด้านของทุกสถานการณ์</strong> ก่อนตัดสินใจ — คุณไม่เข้าขั้วใดขั้วหนึ่ง แต่เดินบนเส้นทางที่ยืดหยุ่น`;
+    p1 = `คุณสลับไปมาระหว่างสองทางเลือกอย่างสม่ำเสมอ นี่บ่งบอกว่าคุณมี<strong>ความสามารถในการมองเห็นสองด้านของทุกสถานการณ์</strong> ก่อนตัดสินใจ — คุณไม่เข้าขั้วใดขั้วหนึ่ง แต่เดินบนเส้นทางที่ยืดหยุ่น`;
   } else if (dominantChoice === 'balanced') {
-    p1 = `<strong>รูปแบบคำตอบของคุณ: ${pattern}</strong> — คุณสมดุลอย่างลงตัวระหว่างสองทางเลือก นี่บ่งบอกว่าคุณมี<strong>ปัญญาในการหาจุดกึ่งกลาง</strong> — ไม่รีบเร่ง ไม่ปล่อยทิ้ง แต่ประเมินทุกสถานการณ์ตามความเหมาะสม`;
+    p1 = `คุณสมดุลอย่างลงตัวระหว่างสองทางเลือก นี่บ่งบอกว่าคุณมี<strong>ปัญญาในการหาจุดกึ่งกลาง</strong> — ไม่รีบเร่ง ไม่ปล่อยทิ้ง แต่ประเมินทุกสถานการณ์ตามความเหมาะสม`;
   } else {
     const tone = dominantChoice === 'A'
-      ? `คุณมัก<strong>เลือกทางที่ระมัดระวังและไตร่ตรอง</strong> (${aCount} ครั้ง) มากกว่าทางที่ลงมือทำโดยตรง (${bCount} ครั้ง) — แสดงว่าคุณให้คุณค่ากับความมั่นคงและการวางแผน`
-      : `คุณมัก<strong>เลือกทางที่ลงมือทำและเปิดรับการเปลี่ยนแปลง</strong> (${bCount} ครั้ง) มากกว่าทางที่รักษาไว้ (${aCount} ครั้ง) — แสดงว่าคุณพร้อมคว้าโอกาสและไม่กลัวการเปลี่ยนแปลง`;
-    p1 = `<strong>รูปแบบคำตอบของคุณ: ${pattern}</strong> — ${tone}`;
+      ? `คุณมัก<strong>เลือกทางที่ระมัดระวังและไตร่ตรอง</strong> มากกว่าทางที่ลงมือทำโดยตรง — แสดงว่าคุณให้คุณค่ากับความมั่นคงและการวางแผน`
+      : `คุณมัก<strong>เลือกทางที่ลงมือทำและเปิดรับการเปลี่ยนแปลง</strong> มากกว่าทางที่รักษาไว้ — แสดงว่าคุณพร้อมคว้าโอกาสและไม่กลัวการเปลี่ยนแปลง`;
+    p1 = tone;
   }
 
-  // Paragraph 2: Score + card
-  const scoreLabel = score === 0 ? 'ศูนย์คะแนน'
-    : score === 1 ? 'หนึ่งคะแนน'
-    : score === 10 ? 'สิบคะแนนเต็ม'
-    : `${score} คะแนน`;
-  const p2 = `คุณทำคะแนนได้ <strong>${scoreLabel}</strong> จาก 10 คำถาม ซึ่งจัดอยู่ในระดับ<strong>ผลลัพธ์${outcomeLabel}</strong> — ไพ่ที่เหมาะกับเส้นทางของคุณใน<em>${category}</em> คือ <strong>${cardName}</strong>`;
+  // Paragraph 2: Card + category
+  const p2 = `ไพ่ที่เหมาะกับเส้นทางของคุณใน<em>${category}</em> คือ <strong>${cardName}</strong>`;
 
-  // Paragraph 3: Score interpretation
-  const p3 = score <= 2
-    ? `คุณอยู่ในกลุ่มที่ให้ความสำคัญกับ<strong>ความระมัดระวังและการรักษาสิ่งที่มีอยู่</strong> มากกว่าการริเริ่มใหม่ คุณไม่รีบตัดสินใจจนกว่าจะแน่ใจ — นี่คือจุดแข็งที่ควรภูมิใจ`
-    : score <= 4
-    ? `คุณอยู่ในกลุ่มที่มีทั้ง<strong>ความระมัดระวังและความเปิดรับ</strong> โดยเอนเอียงไปทางการวางแผนก่อนลงมือทำ คุณมีสติในการประเมินสถานการณ์ก่อนตัดสินใจ — จุดนี้จะพาคุณไปได้ไกล`
-    : score <= 6
-    ? `คุณอยู่ในกลุ่มที่มี<strong>ความสมดุลระหว่างการระมัดระวังและการลงมือทำ</strong> — คุณตัดสินใจตามสถานการณ์ บางครั้งรอ บางครั้งลงมือ — นี่คือความยืดหยุ่นที่มีคุณค่า`
-    : score <= 8
-    ? `คุณอยู่ในกลุ่มที่พร้อม<strong>ลงมือทำและเปิดรับการเปลี่ยนแปลง</strong> โดยยังคงมีสติในการประเมินทางเลือก คุณไม่รอจนกว่าจะมั่นใจ 100% แต่ก็ไม่ปล่อยให้ความกล้าเป็นไปโดยไม่มีเหตุผล`
-    : `คุณอยู่ในกลุ่มที่มี<strong>ความกล้าหาญและพร้อมลงมือทำในสิ่งที่เชื่อ</strong> คุณไม่รอจนกว่าจะมั่นใจทุกอย่าง — คุณสร้างความมั่นใจจากการลงมือทำ — นี่คือพลังที่แรงกล้า`;
+  // Paragraph 3: Pattern interpretation (uses analysis, not numeric score)
+  let p3 = '';
+  if (isClustered) {
+    p3 = dominantChoice === 'A'
+      ? `จากรูปแบบที่รวมกลุ่มของคุณ — นี่บ่งบอกว่าคุณมี<strong>จุดยืนที่ชัดเจนในการตัดสินใจ</strong> คุณไม่ใช่คนที่เปลี่ยนทิศทางง่ายๆ และมีความเข้าใจลึกซึ้งในตัวเอง — นี่คือจุดแข็งที่ควรภูมิใจ`
+      : `จากรูปแบบที่รวมกลุ่มของคุณ — นี่บ่งบอกว่าคุณมี<strong>ความกล้าหาญในการเลือกทางของตัวเอง</strong> คุณไม่ลังเลที่จะลงมือทำเมื่อตัดสินใจแล้ว — นี่คือพลังที่จะพาคุณไปได้ไกล`;
+  } else if (isAlternating) {
+    p3 = `จากรูปแบบที่สลับไปมาของคุณ — นี่บ่งบอกว่าคุณมี<strong>ความสามารถในการมองเห็นสองด้านของทุกสถานการณ์</strong> ก่อนตัดสินใจ คุณไม่เข้าข้างใดข้างหนึ่งง่ายๆ — นี่คือความยืดหยุ่นที่มีคุณค่าและนำทางคุณในเส้นทางที่สมดุล`;
+  } else {
+    p3 = dominantChoice === 'A'
+      ? `จากรูปแบบคำตอบของคุณ — นี่บ่งบอกว่าคุณให้คุณค่ากับ<strong>ความมั่นคงและการไตร่ตรองก่อนตัดสินใจ</strong> คุณไม่รีบเร่งและมีสติในการประเมินทุกสถานการณ์ — นี่คือจุดแข็งที่จะคอยประคองคุณ`
+      : dominantChoice === 'B'
+      ? `จากรูปแบบคำตอบของคุณ — นี่บ่งบอกว่าคุณพร้อม<strong>ลงมือทำและเปิดรับการเปลี่ยนแปลง</strong> เมื่อเห็นโอกาส คุณไม่ปล่อยให้มันหลุดไป — นี่คือพลังที่จะพาคุณไปได้ไกล`
+      : `จากรูปแบบที่สมดุลของคุณ — นี่บ่งบอกว่าคุณมี<strong>ปัญญาในการปรับตัวตามสถานการณ์</strong> ไม่เข้าข้างใดข้างหนึ่งอย่างตายตัว — นี่คือความยืดหยุ่นที่มีคุณค่ายิ่ง`;
+  }
 
-  return `<p>${p1}</p><p>${p2}</p><p>${p3}</p>`;
+  // Pattern line (outside the box)
+  const patternLine = `รูปแบบคำตอบของคุณ: <strong>${pattern}</strong>`;
+
+  return {
+    narrative: `<p>${p1}</p><p>${p2}</p><p>${p3}</p>`,
+    pattern: patternLine
+  };
 }
 
 /* ================================================
@@ -627,13 +634,10 @@ function showSummary() {
 
   $('summary-card-name').textContent = deck[cardIdx].name;
 
-  $('summary-narrative').innerHTML = generateNarrative(currentCategory, cardIdx, drawnCards);
-
-  const aCount = drawnCards.filter(c => c.choiceLabel === 'A').length;
-  const bCount = drawnCards.filter(c => c.choiceLabel === 'B').length;
-  const pattern = drawnCards.map(c => c.choiceLabel).join('');
-  $('summary-pattern').textContent =
-    `รูปแบบ: ${pattern} · A: ${aCount} · B: ${bCount} · คะแนน: ${score}/10`;
+  const { narrative, pattern } = generateNarrative(currentCategory, cardIdx, drawnCards);
+  $('summary-narrative').innerHTML = narrative;
+  $('summary-card-meaning').textContent = deck[cardIdx].meaning;
+  $('summary-pattern').innerHTML = pattern;
 }
 
 /* ================================================

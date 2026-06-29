@@ -408,7 +408,6 @@ body {
   width: 200px;
   height: auto;
   border-radius: 14px;
-  border: 2px solid var(--gold);
   box-shadow:
     0 0 30px rgba(245,200,66,0.3),
     0 0 80px rgba(139,92,246,0.25),
@@ -453,8 +452,13 @@ body {
   font-size: clamp(0.9rem, 3.5vw, 1.02rem);
   color: var(--text-muted);
   line-height: 2;
-  text-align: center;
+  text-align: left;
   animation: fadeUp 0.7s ease 0.3s both;
+  margin-top: 1.5rem;
+}
+
+.summary-narrative p:nth-child(2) {
+  text-align: center;
 }
 
 .summary-narrative p {
@@ -470,15 +474,27 @@ body {
   font-style: normal;
 }
 
-/* ================================================
-   PATTERN SUMMARY LINE
-   ================================================ */
-.summary-pattern {
-  font-size: 0.78rem;
-  color: var(--text-dim);
-  letter-spacing: 0.08em;
+
+
+.summary-card-name {
   text-align: center;
-  animation: fadeUp 0.7s ease 0.4s both;
+  margin-top: 1rem;
+}
+
+.summary-card-meaning {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.95rem;
+  margin-top: 0.2rem;
+  line-height: 1.5;
+}
+
+.summary-pattern {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  margin: 0.1rem auto 0;
+  text-align: center;
 }
 
 /* ================================================

@@ -62,7 +62,7 @@ A Thai-language tarot web app where users answer 10 binary (A/B) fork questions 
 - FR-004: Question text, context, A choice, and B choice always visible.
 - FR-005: A choice records 0 points; B choice records 1 point.
 - FR-006: After Q10, a brief 400ms pause then summary screen shows.
-- FR-007: Summary shows: category label, card image (PNG from `assets/cards/`), card name, narrative, pattern string, A/B/score summary.
+- FR-007: Summary shows: category label, card image (PNG from `assets/cards/`), card name, narrative (no numeric score disclosed). Pattern line removed entirely.
 - FR-008: Card image uses existing `card-XX.png` assets (not modified).
 - FR-009: Restart button returns to category select screen.
 - FR-010: Disclaimer text always visible: "ไพ่ทาโร่นี้มีไว้เพื่อสำรวจตัวเองเท่านั้น ไม่ใช่คำทำนายหรือคำแนะนำในการตัดสินใจ กรุณาใช้วิจารณญาณของตัวเอง"
@@ -72,13 +72,13 @@ A Thai-language tarot web app where users answer 10 binary (A/B) fork questions 
 ## Narrative Generation
 
 `generateNarrative(category, cardIndex, cards)` produces 3 paragraphs:
-1. **Pattern description**: describes the A/B pattern (clustered, alternating, balanced, dominant choice)
-2. **Score + outcome**: score out of 10, outcome index label, card name
-3. **Interpretation**: score-range-based description of the user's approach
+1. **Pattern description**: describes the choice pattern (clustered, alternating, balanced, dominant choice)
+2. **Outcome**: outcome index label, card name (no numeric score disclosed)
+3. **Interpretation**: pattern-based description — uses `isClustered`, `isAlternating`, `dominantChoice`, not numeric score
+
+Pattern display uses symbols (◆/◇) instead of A/B letters so the user cannot deduce their score from the pattern string.
 
 Pattern detection uses:
-- `aCount` / `bCount` — number of A and B choices
-- `maxAStreak` / `maxBStreak` — longest consecutive run
 - `isClustered` — streak ≥ 5
 - `isAlternating` — exact ABAB... pattern
 - `dominantChoice` — A-dominant, B-dominant, or balanced
@@ -89,8 +89,8 @@ Pattern detection uses:
 Deck        → { id, name, meaning }
 Category    → { icon, outcomes[5], questions[10] }
 Question    → { text, context, A: {path, trade}, B: {path, trade} }
-DrawnCard  → { choiceLabel: 'A'|'B', questionText }
-Analysis    → { pattern, aCount, bCount, maxAStreak, maxBStreak, isAlternating, isClustered, dominantChoice }
+DrawnCard  → { choiceLabel: 'A'|'B', questionText }  (internal — not shown to user)
+Analysis    → { isClustered, isAlternating, dominantChoice }  (no score disclosed)
 ```
 
 ## Success Criteria
