@@ -30,6 +30,5 @@ Since this is a configuration repository, traditional build/test commands may no
 
 ## Code Preservation Rules
 
-- **DO NOT remove** `const categories(question)` in `apps/tarot/app.js` — this function is required.
 - **DO NOT remove** `const deck` in `apps/tarot/app.js` — the 22-card deck data is required.
 - **DO NOT remove** any picture files in `apps/tarot/` — picture assets must be preserved.
