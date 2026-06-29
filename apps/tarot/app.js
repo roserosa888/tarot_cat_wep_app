@@ -17,10 +17,10 @@ const deck = [
   { id: 10, name: "Wheel of Fortune",    meaning: "โชคชะตาหมุนมาหาคุณแล้ว" },
   { id: 11, name: "Justice",             meaning: "ความยุติธรรมและความจริงจะปรากฏ" },
   { id: 12, name: "The Hanged Man",             meaning: "หยุดพักและมองจากมุมมองใหม่" },
-  { id: 13, name: "The Cat's Death",            meaning: "การเปลี่ยนแปลงและจุดเริ่มต้นใหม่" },
+  { id: 13, name: "The Death",            meaning: "การเปลี่ยนแปลงและจุดเริ่มต้นใหม่" },
   { id: 14, name: "Temperance",           meaning: "ความสมดุลในทุกสิ่ง" },
-  { id: 15, name: "The Cat Devil",              meaning: "ติดอยู่กับความต้องการ — จงระวัง" },
-  { id: 16, name: "The Cat Tower",              meaning: "ปล่อยวางสิ่งที่ไม่เป็นประโยชน์ต่อคุณ" },
+  { id: 15, name: "The Devil",              meaning: "ติดอยู่กับความต้องการ — จงระวัง" },
+  { id: 16, name: "The Tower",              meaning: "ปล่อยวางสิ่งที่ไม่เป็นประโยชน์ต่อคุณ" },
   { id: 17, name: "The Star",            meaning: "ความหวังและแรงบันดาลใจส่องประกาย" },
   { id: 18, name: "The Moon",             meaning: "สิ่งต่างๆ อาจไม่เป็นอย่างที่เห็น" },
   { id: 19, name: "The Sun",             meaning: "ความสุข ความสำเร็จ และความอบอุ่น" },
@@ -113,7 +113,7 @@ const _cats = {
 
   "ความรัก": {
     icon: "💞",
-    outcomes: [6, 8, 14, 12, 2],
+    outcomes: [6, 8, 14, 18, 2],
     questions: [
       {
         text: "มีบางอย่างในใจที่อยากบอกเขา",
@@ -580,7 +580,7 @@ function generateNarrative(category, cardIdx, cards) {
   const score = cards.reduce((s, c) => s + (c.choiceLabel === 'A' ? 0 : 1), 0);
   const outcomeIdx = scoreToOutcomeIndex(score);
   const nd = narrativeData[category][outcomeIdx];
-  const recommended = `ไพ่ประจำตัวของคุณ ก็คือ <strong>${deck[cardIdx].name}</strong>`;
+  const recommended = `<strong>${deck[cardIdx].name}</strong>`;
 
   return `
     <div class="narrative-row narrative-meaning">
@@ -592,7 +592,7 @@ function generateNarrative(category, cardIdx, cards) {
       <span class="narrative-text">${nd.pros}</span>
     </div>
     <div class="narrative-row narrative-recommended">
-      <span class="narrative-label">ไพ่แนะนำ</span>
+      <span class="narrative-label">ไพ่ประจำตัว</span>
       <span class="narrative-text">${recommended}</span>
     </div>
     <div class="narrative-row narrative-cons">
