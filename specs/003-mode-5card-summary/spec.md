@@ -1,128 +1,106 @@
-# Feature Specification: Mode 5-Card Summary with Point-Based Level Scoring
+# Feature Specification: Thai-Language Tarot 10-Question Fork Reading
 
 **Feature Branch**: `003-mode-5card-summary`
+**Created**: 2026-06-26 | **Status**: Active
+**Updated**: 2026-06-29 | Supersedes previous spec
 
-**Created**: 2026-06-26
+## Overview
 
-**Status**: Draft
+A Thai-language tarot web app where users answer 10 binary (A/B) fork questions in one of 5 life categories. Each question presents a real-life dilemma with two choices — A or B — where each carries a trade-off, not a right or wrong answer. After all 10 questions, the app calculates a score and maps it to one of 5 tarot card outcomes per category. The final card is revealed with an animated reveal and a personalized narrative synthesized from the user's answer pattern.
 
-**Constitution**: `.specify/memory/constitution.md` (Principle I: Template-Driven Consistency)
+## User Stories
 
-**Input**: User description: "Add a mode where every question shows 5 card summary with reasoning — scoring: A=+1, B=0, sum all 10 answers, if total >10 is level 4"
+- **US1 — Choose a Life Category** (P1): User sees 5 category buttons and taps one to begin a 10-question reading. Acceptance: 5 categories visible; clicking starts question flow; disclaimer always visible.
+- **US2 — Answer 10 Fork Questions** (P1): Each question shows a real-life dilemma with two choices — A or B. No right or wrong answer. Progress bar shows Q1/10 through Q10/10. Acceptance: 10 questions per category; progress bar increments; A/B buttons respond.
+- **US3 — Receive a Single Outcome Card** (P1): After Q10, score 0–10 maps to one of 5 outcome cards per category. Card image (existing PNG asset) reveals with animation. Acceptance: exactly 1 card shown; correct card for score range; animated reveal.
+- **US4 — Read a Personalized Narrative** (P2): The narrative synthesizes the user's answer pattern (streaks, balance, dominant choice) into a life-reading paragraph for the category. Acceptance: narrative references actual A/B pattern; unique per user.
+- **US5 — Restart and Try Another Category** (P3): User can restart at any time and choose a different category. Acceptance: restart button visible on summary; returns to category select.
 
----
+## Scoring System
 
-## User Scenarios & Testing *(mandatory)*
+- **A choice = 0 points** (cautious, reflective path)
+- **B choice = 1 point** (action, change, risk-taking path)
+- **Maximum score = 10** (all B choices)
 
-### User Story 1 - Play Reading Mode with 5-Card Summary (Priority: P1)
+### Score Ranges → Outcome Card
 
-As a user, I want to answer 10 binary (A/B) questions and receive a 5-card tarot spread with reasoning for each card, so I get a rich personalized reading that explains why each card was chosen.
+| Score Range | Outcome Index | Interpretation |
+|---|---|---|
+| 0–2 | ผลลัพธ์ที่ 1 | Very cautious / reflective path |
+| 3–4 | ผลลัพธ์ที่ 2 | Balanced — leaning toward caution |
+| 5–6 | ผลลัพธ์ที่ 3 | Balanced — leaning toward action |
+| 7–8 | ผลลัพธ์ที่ 4 | Action-oriented path |
+| 9–10 | ผลลัพธ์ที่ 5 | Bold, fully action-oriented path |
 
-**Why this priority**: This is the core new mode — the entire value proposition of this feature. Without it, the feature does not exist.
+### Score → Card Mapping Per Category
 
-**Independent Test**: Select category → answer all 10 questions → verify 5 cards appear in the summary with reasoning text for each card.
+| Category | 0–2 | 3–4 | 5–6 | 7–8 | 9–10 |
+|---|---|---|---|---|---|
+| การงาน | Hermit (9) | Emperor (4) | Chariot (7) | Magician (1) | Star (17) |
+| ความรัก | Hanged Cat (12) | Lovers (6) | Strength (8) | Sun (19) | World (21) |
+| การเงิน | Justice (11) | Wheel (10) | Emperor (4) | Temperance (14) | Sun (19) |
+| ตัวตน | Priestess (2) | Cat's Death (13) | Magician (1) | Star (17) | Sun (19) |
+| ครอบครัว | Hierophant (5) | Empress (3) | Lovers (6) | Emperor (4) | World (21) |
 
-**Acceptance Scenarios**:
+## Categories & Questions
 
-1. **Given** the user selects a category and answers all 10 questions, **When** they reach the summary screen, **Then** exactly 5 tarot cards are displayed in a spread layout.
-2. **Given** the user is on the summary screen, **When** the cards load, **Then** each card has a unique reasoning paragraph explaining why that card was selected based on the user's answer pattern.
-3. **Given** the user restarts and plays the same category, **When** they answer differently, **Then** the 5-card spread and reasoning differ accordingly.
-4. **Given** the user completes a reading, **When** they see the summary, **Then** the 5 cards are visually arranged in a spread (e.g., row of 5 or a cross/triangle layout).
+**การงาน**: staying vs leaving, passion vs opportunity, autonomy vs stability, growth vs comfort, effort vs result, collaboration vs solo, recognition vs meaning, risk vs security, short-term vs long-term, leading vs following.
 
----
+**ความรัก**: expressing vs holding back, fighting vs letting go, giving vs receiving, trust vs doubt, closeness vs space, commitment vs freedom, heart vs logic, past vs future, self vs partner, staying vs moving on.
 
-### User Story 2 - Point-Based Scoring & Level Calculation (Priority: P2)
+**การเงิน**: spending vs saving, investing vs holding, giving vs keeping, risk vs safety, now vs later, need vs want, security vs growth, generosity vs self-care, stability vs opportunity, control vs flow.
 
-As a user, I want my 10 answers to be scored (A = +1 point, B = 0 points) and displayed as a level (1–5), so I understand the intensity/energy of my overall reading.
+**ตัวตน**: authentic vs accepted, change vs stay, speaking vs silence, solitude vs connection, dreaming vs doing, heart vs mind, old self vs new self, visible vs invisible, holding on vs letting go, leading vs following.
 
-**Why this priority**: The scoring gives users a quick numeric summary of their pattern. Without it, the 5-card spread feels less contextualized.
+**ครอบครัว**: family expectation vs personal dream, giving vs receiving care, closeness vs boundaries, tradition vs change, duty vs desire, speaking truth vs keeping peace, staying vs leaving home, past wounds vs present love, sacrifice vs self-preservation, protecting vs releasing.
 
-**Independent Test**: Answer known combinations of A/B, verify the displayed score and level match the expected values.
+## Functional Requirements
 
-**Acceptance Scenarios**:
+- FR-001: 5 category buttons visible on initial load with icons and labels.
+- FR-002: Clicking a category transitions to question screen with Q1.
+- FR-003: Progress bar fills from 0% to 100% over 10 questions.
+- FR-004: Question text, context, A choice, and B choice always visible.
+- FR-005: A choice records 0 points; B choice records 1 point.
+- FR-006: After Q10, a brief 400ms pause then summary screen shows.
+- FR-007: Summary shows: category label, card image (PNG from `assets/cards/`), card name, narrative, pattern string, A/B/score summary.
+- FR-008: Card image uses existing `card-XX.png` assets (not modified).
+- FR-009: Restart button returns to category select screen.
+- FR-010: Disclaimer text always visible: "ไพ่ทาโร่นี้มีไว้เพื่อสำรวจตัวเองเท่านั้น ไม่ใช่คำทำนายหรือคำแนะนำในการตัดสินใจ กรุณาใช้วิจารณญาณของตัวเอง"
+- FR-011: Screen transitions use smooth fade animation.
+- FR-012: Card reveal has flip/spin animation before final image appears.
 
-1. **Given** the user answers all A (10 A's, 0 B's), **Then** the score is 10 and the level displayed is **5** (max).
-2. **Given** the user answers 0 A's and 10 B's, **Then** the score is 0 and the level displayed is **1** (min).
-3. **Given** the user answers 6 A's and 4 B's (score = 6), **Then** the level displayed is **3** (score 6–7).
-4. **Given** the user answers 9 A's and 1 B (score = 9), **Then** the level displayed is **4** (score 8–10).
-5. **Given** the user answers 4 A's and 6 B's (score = 4), **Then** the level displayed is **2** (score 3–5).
+## Narrative Generation
 
-**Level Table (scoring: A=+1, B=0, max 10)**:
+`generateNarrative(category, cardIndex, cards)` produces 3 paragraphs:
+1. **Pattern description**: describes the A/B pattern (clustered, alternating, balanced, dominant choice)
+2. **Score + outcome**: score out of 10, outcome index label, card name
+3. **Interpretation**: score-range-based description of the user's approach
 
-| Score Range | Level |
-|------------|-------|
-| 0–2        | 1     |
-| 3–5        | 2     |
-| 6–7        | 3     |
-| 8–10       | 4     |
+Pattern detection uses:
+- `aCount` / `bCount` — number of A and B choices
+- `maxAStreak` / `maxBStreak` — longest consecutive run
+- `isClustered` — streak ≥ 5
+- `isAlternating` — exact ABAB... pattern
+- `dominantChoice` — A-dominant, B-dominant, or balanced
 
----
+## Key Entities
 
-### User Story 3 - Reasoning Support Per Card (Priority: P3)
+```
+Deck        → { id, name, meaning }
+Category    → { icon, outcomes[5], questions[10] }
+Question    → { text, context, A: {path, trade}, B: {path, trade} }
+DrawnCard  → { choiceLabel: 'A'|'B', questionText }
+Analysis    → { pattern, aCount, bCount, maxAStreak, maxBStreak, isAlternating, isClustered, dominantChoice }
+```
 
-As a user, each of the 5 cards in the spread should have reasoning that references specific questions/answers from my session, so I understand the connection between my choices and the card.
+## Success Criteria
 
-**Why this priority**: Reasoning makes the reading meaningful and personal — without it, cards feel random.
-
-**Acceptance Scenarios**:
-
-1. **Given** card 0 is displayed, **When** the reasoning renders, **Then** it references the user's specific answer pattern (e.g., "คุณเลือก A 7 ครั้งจาก 10 คำถาม แสดงถึง...").
-2. **Given** the user answers with an alternating pattern (ABAB...), **When** the reasoning for any card is shown, **Then** it notes the alternating tendency and interprets it.
-3. **Given** the user answers with a clustered pattern (e.g., AAAA then BBBB), **When** the reasoning is shown, **Then** it notes the clustering behavior.
-
----
-
-### Edge Cases
-
-- What if the user answers exactly 5 A's (score = 5)? → Level 2, because 5 falls in range 3–5.
-- What if the user clicks "restart" mid-reading? → Reset state entirely, return to category select.
-- What if the card reasoning is too long? → Text truncates or scrolls gracefully within its card container.
-- Does the 5-card spread reuse the existing card images? → Yes, reuse existing `card-XX.png` files.
-
----
-
-## Requirements *(mandatory)*
-
-### Functional Requirements
-
-- **FR-001**: After 10 answered questions, the summary screen MUST display exactly **5 tarot cards** in a spread layout.
-- **FR-002**: Each of the 5 cards MUST display a **unique reasoning paragraph** explaining why that card was selected for the user's specific answer pattern.
-- **FR-003**: The system MUST calculate a **score** by summing: A answers = +1 each, B answers = 0. Max score = 10.
-- **FR-004**: The system MUST display a **level (1–4)** based on the score table:
-  - Score 0–2 → Level 1
-  - Score 3–5 → Level 2
-  - Score 6–7 → Level 3
-  - Score 8–10 → Level 4
-- **FR-005**: The 5-card selection logic MUST be **pattern-aware**: cards are chosen based on the user's A/B streak, count, and clustering patterns — not random.
-- **FR-006**: Each card's reasoning MUST reference the user's actual answer pattern (streak length, A count, alternation tendency, etc.).
-- **FR-007**: The summary screen MUST also display the **A/B pattern string** (e.g., "AABBAABABB") and **score + level**.
-- **FR-008**: The 5-card spread layout MUST be visually distinct from the current single-card summary — a row of 5 cards or a defined spread pattern.
-
-### Key Entities
-
-- **ReadingSession**: Represents a complete 10-question reading. Attributes: `category`, `answers[]` (each: `{choiceLabel, questionIndex}`), `score` (0–10), `level` (1–4).
-- **CardSpread**: Represents the 5-card result. Attributes: `cards[]` (5 deck indices), `reasoning[]` (5 strings keyed to pattern analysis).
-- **PatternAnalysis**: Represents the analysis of 10 answers. Attributes: `aCount`, `bCount`, `maxAStreak`, `maxBStreak`, `pattern` (string), `isAlternating`, `isClustered`, `dominantChoice`.
-
----
-
-## Success Criteria *(mandatory)*
-
-### Measurable Outcomes
-
-- **SC-001**: A user can complete 10 questions and see exactly 5 cards on the summary screen — no more, no fewer.
-- **SC-002**: Each of the 5 cards has a unique reasoning paragraph visible on the summary screen.
-- **SC-003**: Score = sum of A answers (B=0). Level matches the level table above for all possible scores 0–10.
-- **SC-004**: Pattern string (e.g., "AABBAABABB") and score/level are visible on the summary screen.
-- **SC-005**: Playing the same category twice with different answers produces different cards and/or different reasoning.
-- **SC-006**: The 5-card spread is visually arranged (e.g., 5-card row or cross spread) — not a single card.
-
----
-
-## Assumptions
-
-- **Existing deck reuse**: The 22-card deck and existing card images (`card-XX.png`) are reused — no new images needed.
-- **Standalone mode**: The 5-card mode replaces the current single-card summary mode (or runs as the only summary mode). No coexistence with the old mode is required.
-- **Pattern-based card selection**: Card 0–4 of the spread are determined by the pattern analysis — not by random pick from the deck. The mapping from pattern → 5 card indices is deterministic per session.
-- **No persistence**: Reading results are not stored across sessions.
-- **Thai language**: All reasoning text is in Thai, matching the existing app language.
+- All 5 categories load and display 10 questions each
+- Progress bar accurately reflects current question number
+- Score correctly computed as sum of B choices (0–10)
+- Correct card displayed for all 5 score range × 5 categories = 25 verified mappings
+- Narrative varies meaningfully between different answer patterns
+- Card reveal animation plays in browser
+- Restart returns to clean state
+- Disclaimer always visible on all screens
+- Card images load from existing `assets/cards/card-XX.png` files (no new images needed)

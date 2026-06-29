@@ -123,54 +123,6 @@ body {
 }
 
 /* ================================================
-   CRYSTAL ORB (HOME)
-   ================================================ */
-.crystal-orb {
-  position: relative;
-  width: 120px;
-  height: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0.5rem 0;
-}
-
-.orb-inner {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%,
-    rgba(192,132,252,0.7) 0%,
-    rgba(139,92,246,0.5) 40%,
-    rgba(88,28,135,0.8) 100%);
-  box-shadow:
-    0 0 30px rgba(168,85,247,0.5),
-    0 0 80px rgba(139,92,246,0.3),
-    inset 0 0 20px rgba(255,255,255,0.15);
-  animation: orbPulse 4s ease-in-out infinite;
-}
-
-.orb-ring {
-  position: absolute;
-  border-radius: 50%;
-  border: 1px solid rgba(168,85,247,0.3);
-  animation: orbRing 3s linear infinite;
-}
-
-.orb-ring-1 { width: 108px; height: 108px; animation-duration: 8s; animation-direction: normal; }
-.orb-ring-2 { width: 130px; height: 130px; animation-duration: 12s; animation-direction: reverse; }
-
-@keyframes orbPulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(168,85,247,0.5), 0 0 80px rgba(139,92,246,0.3), inset 0 0 20px rgba(255,255,255,0.15); }
-  50%       { transform: scale(1.04); box-shadow: 0 0 45px rgba(168,85,247,0.7), 0 0 100px rgba(139,92,246,0.4), inset 0 0 25px rgba(255,255,255,0.2); }
-}
-
-@keyframes orbRing {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-/* ================================================
    TITLE & SUBTITLE
    ================================================ */
 .main-title {
@@ -234,7 +186,7 @@ body {
   justify-content: flex-start;
 }
 
-#screen-question .question-inner {
+.question-inner {
   padding-top: 1.5rem;
 }
 
@@ -264,6 +216,7 @@ body {
   border-radius: 99px;
   transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow: 0 0 10px rgba(168,85,247,0.6);
+  width: 0%;
 }
 
 .progress-label {
@@ -387,150 +340,6 @@ body {
 }
 
 /* ================================================
-   CARD REVEAL
-   ================================================ */
-.reveal-inner {
-  gap: 1.6rem;
-}
-
-.reveal-header { text-align: center; }
-
-.reveal-choice-label {
-  font-size: 0.85rem;
-  color: var(--text-dim);
-  font-style: italic;
-  letter-spacing: 0.03em;
-}
-
-.card-reveal-wrap {
-  position: relative;
-  width: 200px;
-  height: 300px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Spinning card before reveal */
-.card-spinner {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.spinning-card {
-  width: 200px;
-  height: 300px;
-  background: linear-gradient(135deg, #2a1060, #4a1890, #1a0a3a);
-  border-radius: 14px;
-  border: 2px solid rgba(168,85,247,0.4);
-  box-shadow: 0 0 40px rgba(139,92,246,0.4);
-  animation: spinAndFlip 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.spinning-card::before {
-  content: '';
-  position: absolute;
-  inset: 8px;
-  border: 1px solid rgba(168,85,247,0.3);
-  border-radius: 8px;
-}
-
-.spinning-card::after {
-  content: '✦';
-  font-size: 3rem;
-  color: rgba(168,85,247,0.6);
-  animation: starPulse 0.6s ease infinite;
-}
-
-@keyframes spinAndFlip {
-  0%   { transform: rotateY(0deg) scale(0.8); opacity: 0; }
-  40%  { transform: rotateY(180deg) scale(1); opacity: 1; }
-  70%  { transform: rotateY(270deg) scale(1); }
-  100% { transform: rotateY(360deg) scale(0.8); opacity: 0; }
-}
-
-@keyframes starPulse {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50%       { opacity: 0.9; transform: scale(1.3); }
-}
-
-/* Drawn card */
-.card-drawn {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transform: scale(0.7) rotateY(-20deg);
-  transition: none;
-}
-
-.card-drawn.revealed {
-  opacity: 1;
-  transform: scale(1) rotateY(0deg);
-  transition: all 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-#reveal-card-img {
-  width: 200px;
-  height: auto;
-  border-radius: 14px;
-  border: 2px solid var(--gold);
-  box-shadow:
-    0 0 30px rgba(245,200,66,0.3),
-    0 0 80px rgba(139,92,246,0.25),
-    0 10px 40px rgba(0,0,0,0.7);
-}
-
-/* Glow effect behind revealed card */
-.card-drawn.revealed::before {
-  content: '';
-  position: absolute;
-  inset: -20px;
-  border-radius: 50%;
-  background: radial-gradient(ellipse, rgba(168,85,247,0.2) 0%, transparent 70%);
-  animation: cardGlow 2s ease-in-out infinite;
-}
-
-@keyframes cardGlow {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50%       { opacity: 1; transform: scale(1.1); }
-}
-
-.card-name-reveal {
-  font-size: clamp(1.3rem, 5vw, 1.7rem);
-  color: var(--gold);
-  text-shadow: 0 0 16px var(--gold-glow);
-  letter-spacing: 0.06em;
-  text-align: center;
-  opacity: 0;
-  transition: opacity 0.5s ease 0.3s;
-}
-
-.card-name-reveal.visible { opacity: 1; }
-
-.card-interpretation {
-  font-size: clamp(0.9rem, 3.5vw, 1rem);
-  color: var(--text-muted);
-  text-align: center;
-  max-width: 520px;
-  line-height: 1.75;
-  opacity: 0;
-  transition: opacity 0.5s ease 0.55s;
-}
-
-.card-interpretation.visible { opacity: 1; }
-
-/* ================================================
    BUTTONS
    ================================================ */
 .btn-glow {
@@ -562,21 +371,6 @@ body {
    ================================================ */
 .summary-inner { gap: 1.6rem; }
 
-.summary-crystal {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 40% 40%,
-    rgba(245,200,66,0.5) 0%,
-    rgba(168,85,247,0.4) 50%,
-    rgba(88,28,135,0.8) 100%);
-  box-shadow: 0 0 40px rgba(245,200,66,0.3), 0 0 80px rgba(139,92,246,0.2);
-  animation: orbPulse 4s ease-in-out infinite;
-  margin: 0.5rem 0;
-}
-
-.summary-orb-inner { display: none; }
-
 .summary-title {
   font-size: clamp(1.4rem, 5vw, 1.8rem);
   color: var(--gold);
@@ -592,12 +386,22 @@ body {
   letter-spacing: 0.1em;
 }
 
-/* Single summary card */
-.summary-single-card-wrap {
+/* ================================================
+   CARD REVEAL
+   ================================================ */
+.summary-card-wrap {
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: fadeUp 0.6s ease both;
+  position: relative;
+  opacity: 0;
+  transform: scale(0.85) rotateY(-30deg);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.summary-card-wrap.revealed {
+  opacity: 1;
+  transform: scale(1) rotateY(0deg);
 }
 
 #summary-card-img {
@@ -609,6 +413,23 @@ body {
     0 0 30px rgba(245,200,66,0.3),
     0 0 80px rgba(139,92,246,0.25),
     0 10px 40px rgba(0,0,0,0.7);
+  display: block;
+}
+
+/* Glow behind revealed card */
+.summary-card-wrap.revealed::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(168,85,247,0.2) 0%, transparent 70%);
+  animation: cardGlow 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes cardGlow {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%       { opacity: 1; transform: scale(1.1); }
 }
 
 .summary-card-name {
@@ -617,27 +438,12 @@ body {
   text-shadow: 0 0 16px var(--gold-glow);
   letter-spacing: 0.06em;
   text-align: center;
-  animation: fadeUp 0.7s ease 0.1s both;
+  animation: fadeUp 0.6s ease 0.2s both;
 }
 
-.summary-reason {
-  font-size: clamp(0.95rem, 3.5vw, 1.05rem);
-  color: var(--text-muted);
-  text-align: center;
-  max-width: 540px;
-  line-height: 1.9;
-  animation: fadeUp 0.7s ease 0.2s both;
-}
-
-.summary-pattern {
-  font-size: 0.78rem;
-  color: var(--text-dim);
-  letter-spacing: 0.08em;
-  text-align: center;
-  animation: fadeUp 0.7s ease 0.3s both;
-}
-
-/* Narrative */
+/* ================================================
+   NARRATIVE
+   ================================================ */
 .summary-narrative {
   width: 100%;
   background: linear-gradient(160deg, rgba(139,92,246,0.08) 0%, rgba(30,0,60,0.3) 100%);
@@ -648,13 +454,32 @@ body {
   color: var(--text-muted);
   line-height: 2;
   text-align: center;
-  animation: fadeUp 0.7s ease 0.2s both;
+  animation: fadeUp 0.7s ease 0.3s both;
 }
 
-.summary-narrative p { margin-bottom: 1em; }
+.summary-narrative p {
+  margin-bottom: 1em;
+}
+
 .summary-narrative p:last-child { margin-bottom: 0; }
+
 .summary-narrative strong { color: var(--gold); font-weight: 600; }
-.summary-narrative em { color: var(--purple-glow); font-style: normal; }
+
+.summary-narrative em {
+  color: var(--purple-glow);
+  font-style: normal;
+}
+
+/* ================================================
+   PATTERN SUMMARY LINE
+   ================================================ */
+.summary-pattern {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  text-align: center;
+  animation: fadeUp 0.7s ease 0.4s both;
+}
 
 /* ================================================
    MOBILE TWEAKS
@@ -663,9 +488,6 @@ body {
   .category-grid { grid-template-columns: repeat(3, 1fr); gap: 0.7rem; }
   .category-card { padding: 1.1rem 0.5rem; font-size: 0.88rem; }
   .question-card { padding: 1.5rem 1.2rem; }
-  .card-reveal-wrap { width: 170px; height: 255px; }
-  #reveal-card-img { width: 170px; }
+  #summary-card-img { width: 170px; }
   .summary-narrative { padding: 1.3rem; }
-  .summary-cards-strip { gap: 0.4rem; }
-  .summary-card-thumb { width: 44px; height: 66px; }
 }

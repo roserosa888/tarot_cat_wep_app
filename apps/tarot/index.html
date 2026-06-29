@@ -11,9 +11,9 @@
   <div class="stars" id="stars"></div>
   <div class="container">
 
-    <!-- Disclaimer -->
+    <!-- Disclaimer — always visible -->
     <div class="disclaimer">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       ไพ่ทาโร่นี้มีไว้เพื่อสำรวจตัวเองเท่านั้น ไม่ใช่คำทำนายหรือคำแนะนำในการตัดสินใจ กรุณาใช้วิจารณญาณของตัวเอง
     </div>
 
@@ -21,7 +21,7 @@
     <div id="screen-select" class="screen">
       <div class="screen-inner">
         <h1 class="main-title">ไพ่ทาโร่ต์</h1>
-        <p class="main-subtitle">เลือกหมวดชีวิตที่ต้องการสำรวจ 10 คำถาม</p>
+        <p class="main-subtitle">เลือกหมวดชีวิตที่ต้องการสำรวจ — 10 คำถาม</p>
         <div class="category-grid" id="category-grid">
           <button class="category-card" data-cat="การงาน">
             <div class="cat-icon">⚔️</div>
@@ -50,6 +50,7 @@
     <!-- Screen: Question -->
     <div id="screen-question" class="screen hidden">
       <div class="screen-inner question-inner">
+
         <div class="progress-header">
           <div class="progress-bar-wrap">
             <div class="progress-bar" id="progress-bar"></div>
@@ -65,24 +66,29 @@
           <div class="choice-a" id="choice-a"></div>
           <div class="choice-b" id="choice-b"></div>
         </div>
+
       </div>
     </div>
 
     <!-- Screen: Summary -->
     <div id="screen-summary" class="screen hidden">
       <div class="screen-inner summary-inner">
+
         <h2 class="summary-title">การอ่านดวงชะตาของคุณ</h2>
         <p class="summary-category-label" id="summary-category-label"></p>
 
-        <div class="summary-single-card-wrap">
+        <div class="summary-card-wrap" id="summary-card-wrap">
           <img id="summary-card-img" src="" alt="ไพ่ทาโร่ต์" />
         </div>
 
         <h3 class="summary-card-name" id="summary-card-name"></h3>
-        <div class="summary-reason" id="summary-reason"></div>
+
+        <div class="summary-narrative" id="summary-narrative"></div>
+
         <div class="summary-pattern" id="summary-pattern"></div>
 
         <button class="btn-glow" id="restart-btn">เริ่มใหม่</button>
+
       </div>
     </div>
 

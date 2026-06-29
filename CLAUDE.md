@@ -27,3 +27,9 @@ Since this is a configuration repository, traditional build/test commands may no
 - **Setup Project Plan**: `powershell .specify/scripts/powershell/setup-plan.ps1`
 - **Setup Tasks**: `powershell .specify/scripts/powershell/setup-tasks.ps1`
 - **Create New Feature**: `powershell .specify/scripts/powershell/create-new-feature.ps1`
+
+## Code Preservation Rules
+
+- **DO NOT remove** `const categories(question)` in `apps/tarot/app.js` — this function is required.
+- **DO NOT remove** `const deck` in `apps/tarot/app.js` — the 22-card deck data is required.
+- **DO NOT remove** any picture files in `apps/tarot/` — picture assets must be preserved.
