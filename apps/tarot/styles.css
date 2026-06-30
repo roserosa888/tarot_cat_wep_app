@@ -387,10 +387,40 @@ body {
 }
 
 /* ================================================
-   CARD REVEAL + DONATION FLIP
+   RESULT CARD REVEAL
    ================================================ */
+.result-card-wrap {
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  justify-content: center;
+  margin: 0.5rem auto 1rem;
+}
 
-/* Flip container — replaces .summary-card-wrap */
+.result-card-wrap.revealed {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ================================================
+   DONATION SECTION
+   ================================================ */
+.donate-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1.5rem 0 1rem;
+}
+
+.donate-label {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+/* Flip container */
 .card-interaction-area {
   perspective: 1000px;
   cursor: pointer;
@@ -400,18 +430,10 @@ body {
   width: 200px;
   height: 280px;
   position: relative;
-  opacity: 0;
-  transform: scale(0.85) rotateY(-30deg);
-  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.card-interaction-area.revealed {
-  opacity: 1;
-  transform: scale(1) rotateY(0deg);
 }
 
 /* Glow behind card */
-.card-interaction-area.revealed::before {
+.card-interaction-area::before {
   content: '';
   position: absolute;
   inset: -20px;
@@ -461,7 +483,8 @@ body {
 .card-back .qr-wrap { cursor: pointer; }
 
 /* Card image inside front face */
-#summary-card-img {
+#summary-card-img,
+#donate-sad-img {
   width: 200px;
   height: auto;
   border-radius: 14px;
@@ -646,6 +669,8 @@ body {
 /* ================================================
    STATE D — HAPPY CARD (single static image)
    ================================================ */
+/* State D: front face มี happy card image */
+#card-front.flipped #summary-card-img,
 #happy-final-img {
   width: 200px;
   height: auto;
@@ -682,7 +707,7 @@ body {
   .category-card { padding: 1.1rem 0.5rem; font-size: 0.88rem; }
   .question-card { padding: 1.5rem 1.2rem; }
   .card-interaction-area { width: 170px; height: 238px; }
-  #summary-card-img { width: 170px; }
+  #summary-card-img, #donate-sad-img { width: 170px; }
   .summary-narrative { padding: 1.3rem; }
   .qr-wrap img { width: 160px; height: 160px; }
   #happy-final-img { width: 170px; }

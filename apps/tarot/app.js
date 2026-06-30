@@ -729,43 +729,40 @@ function showSummary() {
   const score = drawnCards.reduce((s, c) => s + (c.choiceLabel === 'A' ? 0 : 1), 0);
   const outcomeIdx = scoreToOutcomeIndex(score);
   const cardIdx = cat.outcomes[outcomeIdx];
-  const isSad = outcomeIdx === 0;
 
   showScreen('summary');
 
   $('summary-category-label').textContent = `ผลลัพธ์ในหมวด ${currentCategory}`;
 
-  // Trigger card reveal animation
-  const wrap = $('card-interaction-area');
-  wrap.classList.remove('revealed', 'flipped');
-  void wrap.offsetWidth; // reflow
-
-  const img = $('summary-card-img');
-  img.src = `assets/cards/card-${String(cardIdx).padStart(2, '0')}.png`;
-
-  setTimeout(() => wrap.classList.add('revealed'), 150);
+  // แสดงผลทำนายปกติ
+  const resultCardWrap = $('result-card-wrap');
+  const resultImg = $('summary-card-img');
+  resultImg.src = `assets/cards/card-${String(cardIdx).padStart(2, '0')}.png`;
+  resultCardWrap.classList.remove('revealed');
+  void resultCardWrap.offsetWidth;
+  setTimeout(() => resultCardWrap.classList.add('revealed'), 150);
 
   $('summary-card-name').textContent = deck[cardIdx].name;
-
   $('summary-narrative').innerHTML = generateNarrative(currentCategory, cardIdx, drawnCards);
 
-  // Reset card faces to front, hide save button
+  // Reset donate section — card faces
+  const wrap = $('card-interaction-area');
+  wrap.classList.remove('flipped');
+  void wrap.offsetWidth;
   $('card-front').classList.remove('flipped');
   $('card-back').classList.remove('flipped');
   $('card-back').classList.add('hidden');
   $('card-front').classList.remove('hidden');
+  // Restore front face to sad card
+  $('card-front').innerHTML = `<img id="donate-sad-img" src="assets/sad/card-13.png" alt="สนับสนุน" />`;
+  // Hide save button
   const saveWrap = $('save-btn-wrap');
   if (saveWrap) saveWrap.classList.add('hidden');
+  // Show donate section
+  $('donate-section').classList.remove('hidden');
 
-  if (isSad) {
-    donationState = 'A';
-    // Wire tap on card area to flip to QR
-    $('card-interaction-area').onclick = onCardTap;
-  } else {
-    donationState = null;
-    $('card-interaction-area').style.cursor = 'default';
-    $('card-interaction-area').onclick = null;
-  }
+  donationState = 'A';
+  wrap.onclick = onCardTap;
 }
 
 /* ================================================
@@ -802,16 +799,28 @@ function onQRTap() {
 
 function onSaveTap() {
   if (donationState !== 'C') return;
-  // Replace QR content with happy card + thank-you message
-  $('qr-info-wrap').innerHTML = `
-    <img id="happy-final-img" src="assets/happy/card-03.png" alt="ไพ่ทาโร่ต์มงคล" />
+  // แสดง happy card แบบ static ใน front face แล้ว flip กลับ
+  const front = $('card-front');
+  const back  = $('card-back');
+  front.innerHTML = `
+    <img id="summary-card-img" src="assets/happy/card-03.png" alt="ไพ่ทาโร่ต์มงคล" />
     <div class="happy-thanks-heading">ขอบคุณที่สนับสนุน! ✨</div>
     <div class="happy-thanks-sub">
       พลังบวกได้รับการส่งต่อแล้ว<br />
       ให้พลังนั้นนำทางคุณไปต่อ 💛
     </div>
   `;
+  // Flip กลับไป front
+  back.classList.remove('flipped');
+  void back.offsetHeight;
+  back.classList.add('flipped');
+  void front.offsetHeight;
+  front.classList.remove('flipped');
+  // Hide back
+  back.classList.add('hidden');
   donationState = 'D';
+  $('card-interaction-area').style.cursor = 'default';
+  $('card-interaction-area').onclick = null;
   $('skip-link').onclick = null;
   $('save-qr-btn').onclick = null;
 }

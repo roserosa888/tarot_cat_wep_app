@@ -80,24 +80,31 @@
         <h3 class="summary-card-name" id="summary-card-name"></h3>
         <div class="summary-card-meaning" id="summary-card-meaning"></div>
 
-        <div class="card-interaction-area" id="card-interaction-area">
-          <div class="card-face card-front" id="card-front">
-            <img id="summary-card-img" src="" alt="ไพ่ทาโร่ต์" />
-          </div>
-          <div class="card-face card-back hidden" id="card-back">
-            <div class="qr-info-wrap" id="qr-info-wrap">
-              <div class="qr-wrap" id="qr-wrap">
-                <img src="assets/sad/qr-donation.png" alt="รหัสชำระเงิน" />
-              </div>
-              <div class="save-btn-wrap hidden" id="save-btn-wrap">
-                <button class="btn-save-qr" id="save-qr-btn">บันทึกรูป QR</button>
-              </div>
-              <button class="skip-link" id="skip-link">ไม่สะดวกโอน</button>
-            </div>
-          </div>
+        <div class="result-card-wrap" id="result-card-wrap">
+          <img id="summary-card-img" src="" alt="ไพ่ทาโร่ต์" />
         </div>
 
         <div class="summary-narrative" id="summary-narrative"></div>
+
+        <div class="donate-section" id="donate-section">
+          <p class="donate-label">สนับสนุนค่ากาแฟ ☕</p>
+          <div class="card-interaction-area" id="card-interaction-area">
+            <div class="card-face card-front" id="card-front">
+              <img id="donate-sad-img" src="assets/sad/card-13.png" alt="สนับสนุน" />
+            </div>
+            <div class="card-face card-back hidden" id="card-back">
+              <div class="qr-info-wrap" id="qr-info-wrap">
+                <div class="qr-wrap" id="qr-wrap">
+                  <img src="assets/sad/qr-code.png" alt="รหัสชำระเงิน" />
+                </div>
+                <div class="save-btn-wrap hidden" id="save-btn-wrap">
+                  <button class="btn-save-qr" id="save-qr-btn">บันทึกรูป QR</button>
+                </div>
+                <button class="skip-link" id="skip-link">ไม่สะดวกโอน</button>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <button class="btn-glow" id="restart-btn">เริ่มใหม่</button>
 
