@@ -583,20 +583,16 @@ function generateNarrative(category, cardIdx, cards) {
   const recommended = `<strong>${deck[cardIdx].name}</strong>`;
 
   return `
+    <div class="narrative-row narrative-recommended">
+      <span class="narrative-text">ไพ่ประจำตัวของคุณ ก็คือ  ${recommended}</span>
+    </div>
     <div class="narrative-row narrative-meaning">
-      <span class="narrative-label">ความหมาย</span>
       <span class="narrative-text">${nd.meaning}</span>
     </div>
     <div class="narrative-row narrative-pros">
-      <span class="narrative-label">ข้อดี</span>
       <span class="narrative-text">${nd.pros}</span>
     </div>
-    <div class="narrative-row narrative-recommended">
-      <span class="narrative-label">ไพ่ประจำตัว</span>
-      <span class="narrative-text">${recommended}</span>
-    </div>
     <div class="narrative-row narrative-cons">
-      <span class="narrative-label">ข้อเสีย</span>
       <span class="narrative-text">${nd.cons}</span>
     </div>
   `;

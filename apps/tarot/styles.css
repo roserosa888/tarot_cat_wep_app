@@ -489,7 +489,26 @@ body {
 .narrative-meaning    .narrative-label { color: #c8a96e; }
 .narrative-pros      .narrative-label { color: #7ec8a4; }
 .narrative-recommended .narrative-label { color: #c8a96e; }
+.narrative-recommended .narrative-text {
+  color: var(--gold);
+  text-shadow: 0 0 10px var(--gold-glow);
+  font-size: 1.05rem;
+  font-weight: 600;
+  text-align: center;
+  width: 100%;
+}
+.narrative-recommended .narrative-text strong {
+  color: var(--gold);
+  font-weight: 700;
+}
 .narrative-cons      .narrative-label { color: #e07a7a; }
+
+.narrative-meaning .narrative-text,
+.narrative-pros .narrative-text,
+.narrative-cons .narrative-text {
+  font-style: italic;
+  padding-left: 1.5rem;
+}
 
 .narrative-text strong { color: var(--gold); font-weight: 600; }
 
