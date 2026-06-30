@@ -387,23 +387,80 @@ body {
 }
 
 /* ================================================
-   CARD REVEAL
+   CARD REVEAL + DONATION FLIP
    ================================================ */
-.summary-card-wrap {
+
+/* Flip container — replaces .summary-card-wrap */
+.card-interaction-area {
+  perspective: 1000px;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 200px;
+  height: 280px;
   position: relative;
   opacity: 0;
   transform: scale(0.85) rotateY(-30deg);
   transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.summary-card-wrap.revealed {
+.card-interaction-area.revealed {
   opacity: 1;
   transform: scale(1) rotateY(0deg);
 }
 
+/* Glow behind card */
+.card-interaction-area.revealed::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(168,85,247,0.2) 0%, transparent 70%);
+  animation: cardGlow 2s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes cardGlow {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%       { opacity: 1; transform: scale(1.1); }
+}
+
+/* Both card faces share backface-visibility */
+.card-face {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+}
+
+/* Front face: sad tarot card image */
+.card-front {
+  transform: rotateY(0deg);
+}
+
+.card-front.flipped {
+  transform: rotateY(180deg);
+  opacity: 0;
+}
+
+/* Back face: QR code — positioned absolutely so front faces it */
+.card-back {
+  position: absolute;
+  inset: 0;
+  transform: rotateY(-180deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-back.flipped {
+  transform: rotateY(0deg);
+}
+
+.card-back .qr-wrap { cursor: pointer; }
+
+/* Card image inside front face */
 #summary-card-img {
   width: 200px;
   height: auto;
@@ -413,22 +470,6 @@ body {
     0 0 80px rgba(139,92,246,0.25),
     0 10px 40px rgba(0,0,0,0.7);
   display: block;
-}
-
-/* Glow behind revealed card */
-.summary-card-wrap.revealed::before {
-  content: '';
-  position: absolute;
-  inset: -20px;
-  border-radius: 50%;
-  background: radial-gradient(ellipse, rgba(168,85,247,0.2) 0%, transparent 70%);
-  animation: cardGlow 2s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes cardGlow {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50%       { opacity: 1; transform: scale(1.1); }
 }
 
 .summary-card-name {
@@ -527,12 +568,110 @@ body {
   line-height: 1.5;
 }
 
-.summary-pattern {
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 0.8rem;
-  letter-spacing: 0.1em;
-  margin: 0.1rem auto 0;
+/* ================================================
+   QR BACK FACE CONTENT
+   ================================================ */
+.qr-info-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  padding: 1.5rem;
+}
+
+.qr-wrap {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(168, 85, 247, 0.3);
+  border-radius: 16px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qr-wrap img {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  display: block;
+  border-radius: 8px;
+}
+
+.save-btn-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.btn-save-qr {
+  background: linear-gradient(135deg, var(--purple), var(--purple-mid));
+  color: var(--gold);
+  border: 1.5px solid rgba(245, 200, 66, 0.3);
+  border-radius: 99px;
+  padding: 0.75rem 2.2rem;
+  font-size: 0.85rem;
+  font-family: inherit;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+  animation: fadeUp 0.4s ease both;
+}
+
+.btn-save-qr:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.6);
+}
+
+.btn-save-qr:active { transform: translateY(0); }
+
+.skip-link {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  letter-spacing: 0.03em;
+  background: none;
+  border: none;
+  font-family: inherit;
+  padding: 0.2rem 0.5rem;
+}
+
+.skip-link:hover { color: var(--text-muted); }
+
+/* ================================================
+   STATE D — HAPPY CARD (single static image)
+   ================================================ */
+#happy-final-img {
+  width: 200px;
+  height: auto;
+  border-radius: 14px;
+  box-shadow:
+    0 0 30px rgba(245, 200, 66, 0.4),
+    0 0 80px rgba(245, 200, 66, 0.2),
+    0 10px 40px rgba(0, 0, 0, 0.7);
+  display: block;
+  margin: 0 auto;
+}
+
+.happy-thanks-heading {
+  font-size: clamp(1.1rem, 4vw, 1.4rem);
+  color: var(--gold);
+  text-shadow: 0 0 14px var(--gold-glow);
   text-align: center;
+  letter-spacing: 0.04em;
+}
+
+.happy-thanks-sub {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.65;
+  font-style: italic;
 }
 
 /* ================================================
@@ -542,6 +681,9 @@ body {
   .category-grid { grid-template-columns: repeat(3, 1fr); gap: 0.7rem; }
   .category-card { padding: 1.1rem 0.5rem; font-size: 0.88rem; }
   .question-card { padding: 1.5rem 1.2rem; }
+  .card-interaction-area { width: 170px; height: 238px; }
   #summary-card-img { width: 170px; }
   .summary-narrative { padding: 1.3rem; }
+  .qr-wrap img { width: 160px; height: 160px; }
+  #happy-final-img { width: 170px; }
 }

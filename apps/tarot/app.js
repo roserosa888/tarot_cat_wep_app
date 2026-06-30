@@ -604,6 +604,7 @@ function generateNarrative(category, cardIdx, cards) {
 let currentCategory = null;
 let currentQ = 0;
 let drawnCards = []; // { choiceLabel: 'A'|'B', questionText }
+let donationState = null; // 'A'|'B'|'C'|'D'|null
 
 /* ================================================
    DOM HELPERS
@@ -719,24 +720,24 @@ function selectChoice(choice, question) {
 }
 
 /* ================================================
-   SUMMARY — SINGLE CARD REVEAL
+   SUMMARY — SINGLE CARD REVEAL + DONATION FLOW
    ================================================ */
 function showSummary() {
   const cats = categories();
   const cat = cats[currentCategory];
 
-  // Score: A=0, B=1
   const score = drawnCards.reduce((s, c) => s + (c.choiceLabel === 'A' ? 0 : 1), 0);
   const outcomeIdx = scoreToOutcomeIndex(score);
   const cardIdx = cat.outcomes[outcomeIdx];
+  const isSad = outcomeIdx === 0;
 
   showScreen('summary');
 
   $('summary-category-label').textContent = `ผลลัพธ์ในหมวด ${currentCategory}`;
 
   // Trigger card reveal animation
-  const wrap = $('summary-card-wrap');
-  wrap.classList.remove('revealed');
+  const wrap = $('card-interaction-area');
+  wrap.classList.remove('revealed', 'flipped');
   void wrap.offsetWidth; // reflow
 
   const img = $('summary-card-img');
@@ -747,17 +748,86 @@ function showSummary() {
   $('summary-card-name').textContent = deck[cardIdx].name;
 
   $('summary-narrative').innerHTML = generateNarrative(currentCategory, cardIdx, drawnCards);
+
+  // Reset card faces to front, hide save button
+  $('card-front').classList.remove('flipped');
+  $('card-back').classList.remove('flipped');
+  $('card-back').classList.add('hidden');
+  $('card-front').classList.remove('hidden');
+  const saveWrap = $('save-btn-wrap');
+  if (saveWrap) saveWrap.classList.add('hidden');
+
+  if (isSad) {
+    donationState = 'A';
+    // Wire tap on card area to flip to QR
+    $('card-interaction-area').onclick = onCardTap;
+  } else {
+    donationState = null;
+    $('card-interaction-area').style.cursor = 'default';
+    $('card-interaction-area').onclick = null;
+  }
+}
+
+/* ================================================
+   DONATION STATE MACHINE
+   State A: sad card front — tap → flip to QR back (State B)
+   State B: QR back visible — tap QR → show save button (State C)
+   State C: save button visible — tap Save → show happy card (State D)
+   State B/C: tap "ไม่สะดวกโอน" → resetToHome()
+   ================================================ */
+
+function onCardTap() {
+  if (donationState !== 'A') return;
+  // Flip card to QR back
+  $('card-front').classList.add('flipped');
+  $('card-back').classList.remove('hidden');
+  void $('card-back').offsetWidth;
+  $('card-back').classList.add('flipped');
+
+  donationState = 'B';
+  $('card-interaction-area').onclick = null;
+  $('qr-wrap').onclick = onQRTap;
+  $('skip-link').onclick = resetToHome;
+}
+
+function onQRTap() {
+  if (donationState !== 'B') return;
+  // Show save button
+  $('save-btn-wrap').classList.remove('hidden');
+  donationState = 'C';
+  $('qr-wrap').onclick = null;
+  $('save-qr-btn').onclick = onSaveTap;
+  // skip-link stays wired
+}
+
+function onSaveTap() {
+  if (donationState !== 'C') return;
+  // Replace QR content with happy card + thank-you message
+  $('qr-info-wrap').innerHTML = `
+    <img id="happy-final-img" src="assets/happy/card-03.png" alt="ไพ่ทาโร่ต์มงคล" />
+    <div class="happy-thanks-heading">ขอบคุณที่สนับสนุน! ✨</div>
+    <div class="happy-thanks-sub">
+      พลังบวกได้รับการส่งต่อแล้ว<br />
+      ให้พลังนั้นนำทางคุณไปต่อ 💛
+    </div>
+  `;
+  donationState = 'D';
+  $('skip-link').onclick = null;
+  $('save-qr-btn').onclick = null;
+}
+
+function resetToHome() {
+  currentCategory = null;
+  currentQ = 0;
+  drawnCards = [];
+  donationState = null;
+  showScreen('select');
 }
 
 /* ================================================
    RESTART
    ================================================ */
-$('restart-btn').addEventListener('click', () => {
-  currentCategory = null;
-  currentQ = 0;
-  drawnCards = [];
-  showScreen('select');
-});
+$('restart-btn').addEventListener('click', resetToHome);
 
 /* ================================================
    INIT
