@@ -612,9 +612,9 @@ body {
 }
 
 .qr-image {
-  width: 200px;
-  height: 200px;
-  clip-path: inset(0 round 30px);
+  width: 260px;
+  height: 290px;
+  clip-path: inset(0 round 20px);
 }
 
 .save-btn-wrap {
