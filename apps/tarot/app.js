@@ -754,7 +754,7 @@ function showSummary() {
   $('card-back').classList.add('hidden');
   $('card-front').classList.remove('hidden');
   // Restore front face to sad card
-  $('card-front').innerHTML = `<img id="donate-sad-img" src="assets/sad/card-13.png" alt="สนับสนุน" />`;
+  $('card-front').innerHTML = `<img id="donate-sad-img" src="assets/donation/sad-card.png" alt="สนับสนุน" />`;
   // Hide save button
   const saveWrap = $('save-btn-wrap');
   if (saveWrap) saveWrap.classList.add('hidden');

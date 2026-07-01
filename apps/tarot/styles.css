@@ -603,21 +603,18 @@ body {
 }
 
 .qr-wrap {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1.5px solid rgba(168, 85, 247, 0.3);
-  border-radius: 16px;
-  padding: 1rem;
+  background: rgba(10, 0, 20, 0.9);
+  border: none;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.qr-wrap img {
+.qr-image {
   width: 200px;
   height: 200px;
-  object-fit: contain;
-  display: block;
-  border-radius: 8px;
+  clip-path: inset(0 round 30px);
 }
 
 .save-btn-wrap {
@@ -709,6 +706,5 @@ body {
   .card-interaction-area { width: 170px; height: 238px; }
   #summary-card-img, #donate-sad-img { width: 170px; }
   .summary-narrative { padding: 1.3rem; }
-  .qr-wrap img { width: 160px; height: 160px; }
   #happy-final-img { width: 170px; }
 }
