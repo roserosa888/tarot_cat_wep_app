@@ -448,12 +448,10 @@ body {
 .card-interaction-area {
   perspective: 1000px;
   cursor: pointer;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  width: 200px;
+  display: block;
   position: relative;
-  overflow: visible;
+  width: 200px;
+  margin: 0 auto;
 }
 
 /* Glow behind card */
@@ -539,27 +537,31 @@ body {
   height: 273px;
   transform: rotateY(-180deg);
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  padding-top: 2rem;
 }
 
 .card-back.flipped {
   transform: rotateY(0deg);
 }
 
-.qr-wrap {
-  background: rgba(10, 0, 20, 0.9);
-  border: none;
-  padding: 0;
+/* QR buttons section — fixed below the card, does not flip */
+#qr-post-flip {
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
-  cursor: default;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
 }
 
-.qr-wrap:hover { cursor: default; }
+#qr-post-flip.hidden {
+  display: none;
+}
+
+.qr-wrap {
+  /* spacer only — QR image lives on .card-back */
+  display: none;
+}
 
 /* Card image inside front face */
 #summary-card-img,
@@ -683,7 +685,7 @@ body {
 }
 
 .qr-happy-inline img {
-  width: 160px;
+  width: 200px;
   height: auto;
   border-radius: 14px;
   box-shadow:
@@ -715,19 +717,13 @@ body {
 /* ================================================
    QR BACK FACE CONTENT
    ================================================ */
-.qr-info-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.1rem;
-  padding: 1.5rem;
-}
 
 .qr-image {
-  width: 160px;
+  width: 250px;
   height: auto;
   border-radius: 14px;
   box-shadow: 0 0 20px rgba(245, 200, 66, 0.2);
+  display: block;
 }
 
 /* Container — positions บันทึก button + ไม่สะดวก below QR image, always visible */
@@ -740,8 +736,8 @@ body {
   z-index: 10;
 }
 
-/* บันทึก button — inside qr-actions */
-.qr-hover-btn {
+/* บันทึก button — always visible after flip */
+.qr-save-btn {
   background: rgba(0, 0, 0, 0.82);
   color: #fff;
   font-size: 0.88rem;
@@ -759,14 +755,14 @@ body {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.qr-hover-btn:hover {
+.qr-save-btn:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 30px rgba(139, 92, 246, 0.6);
 }
 
-.qr-hover-btn:active { transform: translateY(0); }
+.qr-save-btn:active { transform: translateY(0); }
 
-.skip-link {
+.qr-skip-btn {
   font-size: 0.78rem;
   color: var(--text-dim);
   text-decoration: underline;
@@ -780,7 +776,7 @@ body {
   padding: 0.2rem 0.5rem;
 }
 
-.skip-link:hover { color: var(--text-muted); }
+.qr-skip-btn:hover { color: var(--text-muted); }
 
 /* ================================================
    DONATE RESTART BUTTON (State D)

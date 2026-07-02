@@ -755,6 +755,9 @@ function showSummary() {
   $('card-back').classList.add('hidden');
   $('card-front').classList.remove('hidden');
   $('donate-label-above').classList.remove('hidden');
+  $('qr-post-flip').classList.add('hidden');
+  $('qr-actions').classList.remove('hidden');
+  $('qr-happy-inline').classList.add('hidden');
 
   // Restore front face to Death card
   $('card-front').innerHTML = `
@@ -787,7 +790,7 @@ function showSummary() {
 function onCardTap() {
   if (donationState !== 'A') return;
 
-  // Flip card to QR back (State B)
+  // Flip card to QR back
   $('card-front').classList.add('flipped');
   $('card-back').classList.remove('hidden');
   void $('card-back').offsetWidth;
@@ -798,20 +801,8 @@ function onCardTap() {
   $('donate-section').classList.remove('state-a');
   $('donate-label-above').classList.add('hidden');
 
-  // skip-link is now inside qr-wrap, no need to toggle hidden class
-
-  // Wire click on hover button (CSS handles hover visibility)
-  $('qr-hover-btn').addEventListener('click', () => {
-    try { downloadQR(); } catch (_) { /* QR download failure does not block happy card */ }
-    // Show happy card inline below QR, no card flip needed
-    $('qr-happy-inline').classList.remove('hidden');
-    $('qr-actions').classList.add('hidden');
-    donationState = 'D';
-    // Wire restart button
-    $('donate-restart-btn').addEventListener('click', resetToHome);
-  });
-
-  $('skip-link').onclick = resetToHome;
+  // Show the QR post-flip section with buttons
+  $('qr-post-flip').classList.remove('hidden');
 }
 
 function downloadQR() {
@@ -859,7 +850,6 @@ function showHappyCard() {
   donationState = 'D';
   $('card-interaction-area').style.cursor = 'default';
   $('card-interaction-area').onclick = null;
-  $('skip-link').onclick = null;
 }
 
 /* ================================================
@@ -867,12 +857,11 @@ function showHappyCard() {
    ================================================ */
 
 $('summary-save-btn').addEventListener('click', onSaveChoice);
-$('skip-link').onclick = onSkipChoice;
 
 function onSaveChoice() {
   if (choiceMade) return;
   choiceMade = true;
-  $('skip-link').classList.add('hidden');
+  $('qr-skip-btn').classList.add('hidden');
   const btn = $('summary-save-btn');
   btn.disabled = true;
 
@@ -1038,7 +1027,12 @@ function resetToHome() {
   choiceMade = false;
   $('donate-section').classList.remove('state-a');
   $('summary-save-btn').classList.add('hidden');
-  $('skip-link').classList.add('hidden');
+  $('qr-skip-btn').classList.add('hidden');
+  $('qr-post-flip').classList.add('hidden');
+  $('qr-actions').classList.remove('hidden');
+  $('qr-happy-inline').classList.add('hidden');
+  $('qr-happy-inline').querySelectorAll('img, .qr-happy-thanks, .qr-happy-sub')
+    .forEach(el => el.style.display = '');
   showScreen('select');
 }
 
@@ -1046,6 +1040,32 @@ function resetToHome() {
    RESTART
    ================================================ */
 $('restart-btn').addEventListener('click', resetToHome);
+
+/* ================================================
+   QR POST-FLIP BUTTONS — set up once at init
+   ================================================ */
+$('qr-save-btn').addEventListener('click', () => {
+  if (donationState !== 'B') return;
+  try { downloadQR(); } catch (_) {}
+  $('qr-actions').classList.add('hidden');
+  $('qr-happy-inline').classList.remove('hidden');
+  donationState = 'C';
+  $('donate-restart-btn').addEventListener('click', resetToHome);
+});
+
+$('qr-skip-btn').addEventListener('click', () => {
+  if (donationState !== 'B') return;
+  $('qr-actions').classList.add('hidden');
+  $('qr-happy-inline').classList.remove('hidden');
+  const img = $('qr-happy-inline').querySelector('img');
+  const thanks = $('qr-happy-inline').querySelector('.qr-happy-thanks');
+  const sub = $('qr-happy-inline').querySelector('.qr-happy-sub');
+  if (img) img.style.display = 'none';
+  if (thanks) thanks.style.display = 'none';
+  if (sub) sub.style.display = 'none';
+  donationState = 'C';
+  $('donate-restart-btn').addEventListener('click', resetToHome);
+});
 
 /* ================================================
    INIT
