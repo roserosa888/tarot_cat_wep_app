@@ -536,8 +536,9 @@ body {
   inset: 0;
   transform: rotateY(-180deg);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+  padding-top: 2rem;
 }
 
 .card-back.flipped {
