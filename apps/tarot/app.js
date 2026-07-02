@@ -798,10 +798,7 @@ function onCardTap() {
   $('donate-section').classList.remove('state-a');
   $('donate-label-above').classList.add('hidden');
 
-  // Reveal heading + two choice buttons after the card flips
-  $('donate-choice-label').classList.remove('hidden');
-  $('summary-save-btn').classList.remove('hidden');
-  $('skip-link').classList.remove('hidden');
+  // skip-link is now inside qr-wrap, no need to toggle hidden class
 
   // Wire click on hover button (CSS handles hover visibility)
   $('qr-hover-btn').addEventListener('click', () => {
