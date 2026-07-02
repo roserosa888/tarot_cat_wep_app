@@ -746,6 +746,176 @@ body {
 }
 
 /* ================================================
+   US7 — SAVE SUMMARY BUTTON
+   ================================================ */
+.summary-save-btn {
+  background: linear-gradient(135deg, rgba(139,92,246,0.25), rgba(60,20,100,0.4));
+  color: #fff;
+  border: 1.5px solid rgba(168,85,247,0.5);
+  border-radius: 99px;
+  padding: 0.75rem 2rem;
+  font-size: 0.92rem;
+  font-family: inherit;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(139,92,246,0.3);
+  margin-bottom: 0.5rem;
+}
+
+.summary-save-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(139,92,246,0.5);
+  border-color: rgba(245,200,66,0.4);
+}
+
+.summary-save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ================================================
+   US7 — TOAST NOTIFICATIONS
+   ================================================ */
+.us7-toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(120%);
+  background: rgba(10, 0, 25, 0.95);
+  border: 1.5px solid rgba(168,85,247,0.4);
+  border-radius: 99px;
+  padding: 0.7rem 1.8rem;
+  font-size: 0.92rem;
+  font-family: inherit;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.04em;
+  z-index: 2000;
+  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.35s ease;
+  opacity: 0;
+  white-space: nowrap;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+}
+
+.us7-toast.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.us7-toast-success {
+  border-color: rgba(245,200,66,0.5);
+  color: var(--gold);
+}
+
+.us7-toast-error {
+  border-color: rgba(224,122,122,0.5);
+  color: #e07a7a;
+}
+
+/* ================================================
+   US7 — INLINE HAPPY CARD REVEAL
+   ================================================ */
+.happy-inline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 2rem 1rem;
+  animation: fadeUp 0.6s ease both;
+}
+
+.happy-inline img {
+  width: 200px;
+  height: auto;
+  border-radius: 14px;
+  box-shadow:
+    0 0 30px rgba(245,200,66,0.4),
+    0 0 80px rgba(245,200,66,0.2),
+    0 10px 40px rgba(0,0,0,0.7);
+}
+
+.happy-inline-thanks {
+  font-size: clamp(1.2rem, 5vw, 1.6rem);
+  color: var(--gold);
+  text-shadow: 0 0 16px var(--gold-glow);
+  text-align: center;
+  letter-spacing: 0.06em;
+}
+
+.happy-inline-sub {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.7;
+  font-style: italic;
+}
+
+/* ================================================
+   US7 — FALLBACK TAB OVERLAY
+   ================================================ */
+.fallback-tab-wrap {
+  position: fixed;
+  inset: 0;
+  background: rgba(7,0,16,0.95);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.fallback-tab-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  max-width: 400px;
+  width: 100%;
+}
+
+.fallback-close-btn {
+  align-self: flex-start;
+  background: rgba(139,92,246,0.2);
+  border: 1px solid rgba(139,92,246,0.4);
+  color: var(--text-muted);
+  border-radius: 99px;
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.04em;
+}
+
+.fallback-close-btn:hover {
+  color: var(--text);
+  border-color: var(--purple-glow);
+}
+
+#fallback-summary-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+}
+
+.fallback-instruction {
+  color: var(--gold);
+  font-size: 0.95rem;
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: rgba(245,200,66,0.1);
+  border: 1px solid rgba(245,200,66,0.3);
+  border-radius: 12px;
+  padding: 0.8rem 1.2rem;
+}
+
+/* ================================================
    MOBILE TWEAKS
    ================================================ */
 @media (max-width: 480px) {
@@ -757,4 +927,7 @@ body {
   #summary-card-img, #donate-sad-img { width: 170px; }
   .summary-narrative { padding: 1.3rem; }
   #happy-final-img { width: 170px; }
+  /* US7 mobile */
+  .summary-save-btn { font-size: 0.85rem; padding: 0.65rem 1.6rem; }
+  .happy-inline img, #happy-inline-img { width: 160px; }
 }

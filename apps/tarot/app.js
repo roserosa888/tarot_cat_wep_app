@@ -820,7 +820,7 @@ function showHappyCard() {
 
   // Replace front face with happy card
   front.innerHTML = `
-    <img id="happy-final-img" src="assets/donation/happy-card.png" alt="ไพ่ทาโร่ต์มงคล" />
+    <img id="happy-final-img" src="assets/happy/card-03.png" alt="ไพ่ทาโร่ต์มงคล" />
     <div class="happy-thanks-heading">ขอบคุณที่สนับสนุน! ✨</div>
     <div class="happy-thanks-sub">
       พลังบวกได้รับการส่งต่อแล้ว<br />
@@ -840,6 +840,160 @@ function showHappyCard() {
   $('card-interaction-area').style.cursor = 'default';
   $('card-interaction-area').onclick = null;
   $('skip-link').onclick = null;
+}
+
+/* ================================================
+   US7 — SAVE 5-CARD SUMMARY IMAGE + HAPPY CARD
+   ================================================ */
+
+$('summary-save-btn').addEventListener('click', () => {
+  const btn = $('summary-save-btn');
+  if (btn.disabled) return;
+  btn.disabled = true;
+
+  saveSummaryImage()
+    .then(() => {
+      showToast('บันทึกรูปแล้ว', 'success');
+    })
+    .catch(err => {
+      showToast(getErrorMessage(err.type), 'error');
+    })
+    .finally(() => {
+      showHappyInline();
+      btn.disabled = false;
+    });
+});
+
+function saveSummaryImage() {
+  return new Promise((resolve, reject) => {
+    const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+    if (isMobile) {
+      saveMobile().then(resolve).catch(reject);
+    } else {
+      saveDesktop().then(resolve).catch(reject);
+    }
+  });
+}
+
+function saveDesktop() {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth || img.width;
+      canvas.height = img.naturalHeight || img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      const dataUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = `tarot-summary-${Date.now()}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      resolve();
+    };
+    img.onerror = () => reject({ type: 'network_error' });
+    img.src = 'assets/summary/summary-5card.png';
+  });
+}
+
+function saveMobile() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.share || !navigator.canShare) {
+      openFallbackTab();
+      reject({ type: 'unsupported' });
+      return;
+    }
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth || img.width;
+      canvas.height = img.naturalHeight || img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      canvas.toBlob(blob => {
+        const file = new File([blob], 'tarot-summary.png', { type: 'image/png' });
+        if (navigator.canShare({ files: [file] })) {
+          navigator.share({ files: [file], title: 'ไพ่ทาโร่ต์', text: 'การอ่านดวงชะตาของฉัน' })
+            .then(resolve)
+            .catch(err => {
+              if (err.name === 'AbortError') {
+                reject({ type: 'user_cancelled' });
+              } else {
+                openFallbackTab();
+                reject({ type: 'share_failed' });
+              }
+            });
+        } else {
+          openFallbackTab();
+          reject({ type: 'unsupported' });
+        }
+      }, 'image/png');
+    };
+    img.onerror = () => {
+      openFallbackTab();
+      reject({ type: 'network_error' });
+    };
+    img.src = 'assets/summary/summary-5card.png';
+  });
+}
+
+function openFallbackTab() {
+  const win = window.open('assets/summary/summary-5card.png', '_blank');
+  if (!win) {
+    const link = document.createElement('a');
+    link.href = 'assets/summary/summary-5card.png';
+    link.target = '_blank';
+    link.click();
+  }
+}
+
+function getErrorMessage(type) {
+  const messages = {
+    permission_denied: 'ไม่สามารถบันทึกรูปได้ กรุณาอนุญาตการเข้าถึงไฟล์',
+    storage_full:     'พื้นที่เก็บข้อมูลเต็ม กรุณาลบไฟล์บางส่วนแล้วลองใหม่',
+    unsupported:      'เบราว์เซอร์นี้ไม่รองรับการบันทึกรูปโดยตรง กรุณาเปิดในเบราว์เซอร์อื่นหรือบันทึกรูปด้วยตนเอง',
+    network_error:    'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
+    share_failed:    'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
+    user_cancelled:   null,
+  };
+  return messages[type] || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง';
+}
+
+function showToast(msg, type) {
+  if (!msg) return;
+  const existing = document.getElementById('us7-toast');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.id = 'us7-toast';
+  toast.className = `us7-toast us7-toast-${type}`;
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  void toast.offsetWidth;
+  toast.classList.add('visible');
+
+  setTimeout(() => {
+    toast.classList.remove('visible');
+    setTimeout(() => toast.remove(), 400);
+  }, 3000);
+}
+
+function showHappyInline() {
+  const el = $('happy-inline');
+  el.innerHTML = `
+    <img id="happy-inline-img" src="assets/happy/card-03.png" alt="ไพ่มงคล" />
+    <div class="happy-inline-thanks">ขอบคุณที่สนับสนุน! ✨</div>
+    <div class="happy-inline-sub">
+      พลังบวกได้รับการส่งต่อแล้ว<br />
+      ให้พลังนั้นนำทางคุณไปต่อ 💛
+    </div>
+  `;
+  el.classList.remove('hidden');
 }
 
 function resetToHome() {

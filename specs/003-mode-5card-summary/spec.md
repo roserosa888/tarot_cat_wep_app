@@ -2,7 +2,7 @@
 
 **Feature Branch**: `003-mode-5card-summary`
 **Created**: 2026-06-26 | **Status**: Active
-**Updated**: 2026-06-29 | Supersedes previous spec
+**Updated**: 2026-07-02 | Added US7 — save 5-card summary image
 
 ## Overview
 
@@ -16,6 +16,7 @@ A Thai-language tarot web app where users answer 10 binary (A/B) fork questions 
 - **US4 — Read a Personalized Narrative** (P2): The narrative synthesizes the user's answer pattern (streaks, balance, dominant choice) into a life-reading paragraph for the category. Acceptance: narrative references actual A/B pattern; unique per user.
 - **US5 — Restart and Try Another Category** (P3): User can restart at any time and choose a different category. Acceptance: restart button visible on summary; returns to category select.
 - **US6 — Donate Section** (P2): After viewing the result card, a Death tarot card is displayed below the summary. Tapping it flips to a QR code (3D rotate animation). Hovering over the QR shows a clickable "บันทึกรูปเพื่อแสดงการ์ตีใจ" button. Tapping it saves the QR to device and flips the card back to show a happy tarot card as the final reward state. A "ไม่สะดวกโอน" skip link is available from the QR state to return to category selection.
+- **US7 — Save 5-Card Summary Image** (P1): When user taps "บันทึกรูปเพื่อสแกน QR code" on the 5-card summary result screen, the system simultaneously saves the summary image to the user's device and shows a happy card on the frontend without a page reload. On desktop browsers, the image downloads to the user's Downloads folder. On mobile (iOS Safari / Android Chrome), the image saves to the device gallery; if direct save is unsupported, a fallback opens the image for long-press save with user guidance.
 
 ## Scoring System
 
@@ -69,6 +70,11 @@ A Thai-language tarot web app where users answer 10 binary (A/B) fork questions 
 - FR-010: Disclaimer text always visible: "ไพ่ทาโร่นี้มีไว้เพื่อสำรวจตัวเองเท่านั้น ไม่ใช่คำทำนายหรือคำแนะนำในการตัดสินใจ กรุณาใช้วิจารณญาณของตัวเอง"
 - FR-011: Screen transitions use smooth fade animation.
 - FR-012: Card reveal has flip/spin animation before final image appears.
+- FR-013: "บันทึกรูปเพื่อสแกน QR code" button triggers image save and happy card display simultaneously.
+- FR-014: Desktop save uses `<a download>` anchor; mobile save uses Web Share API Level 2 with `navigator.share()`.
+- FR-015: On mobile browsers without share API support, open image in new view with Thai "กดค้างที่รูปเพื่อบันทึกลงอุปกรณ์" instruction and a close/back control.
+- FR-016: Success shows toast "บันทึกรูปแล้ว"; errors show descriptive Thai messages without blocking happy card display.
+- FR-017: Save button is disabled on first tap and re-enabled only after save completes or fails, preventing race conditions.
 
 ## Narrative Generation
 
@@ -121,12 +127,12 @@ Pattern detection uses:
 
 - Card flips (3D rotate animation) to reveal a static pre-uploaded QR code image on the back
 - On hover over QR code image:
-  - Display clickable text: **"บันทึกรูปเพื่อสแกน"** (the QR code image will be saved to your computer or phone) overlaid on or above the QR image
+  - Display clickable button text: **"บันทึกรูปเพื่อสแกน QR code"** (saves the QR code image to your computer or phone) overlaid on or above the QR image
   - Fade-in transition: opacity 0 → 1
   - This text is a BUTTON, not decorative label
-- On click of hover text: trigger TWO sequential actions:
-  1. Save / download the QR code image to user's device
-  2. Immediately transition to State D (Happy Card) — card flips back to front face
+- On click of the button: trigger TWO sequential actions:
+  1. Download / save the QR code image to the user's device (computer or phone)
+  2. Immediately transition to State D (Happy Card) — card flips back to front face, displaying the happy tarot card
 - Below the QR image: small, thin, low-emphasis text link **"ไม่สะดวกโอน"**
   - On click: navigate user back to category selection page
   - Ends the flow without showing the Happy Card
@@ -162,17 +168,110 @@ Pattern detection uses:
 
 - Given State A, when user hovers the Death Card, then hover text appears above the image with fade-in
 - Given State A, when user clicks the Death Card, then card flips to show QR code (State B)
-- Given State B, when user hovers the QR image, then clickable text "บันทึกรูปเพื่อสแกน" appears
+- Given State B, when user hovers the QR image, then clickable button "บันทึกรูปเพื่อสแกน QR code" appears
 - Given State C, when user clicks the hover text, then QR is saved to device AND Happy Card is shown (State D)
 - Given State B or C, when user clicks "ไม่สะดวกโอน", then app navigates back to category selection
 - Given State D, the Happy Card is shown as a single static image with no further interaction needed
 - The QR code is a fixed static asset — no payment gateway, no verification, no slip upload
+
+## Save 5-Card Summary Image
+
+### Trigger
+
+- Button label: **"บันทึกรูปเพื่อสแกน QR code"**
+- Available on the 5-card summary result screen, prominently placed
+- Single tap triggers two simultaneous actions: save image + show happy card
+
+---
+
+### Action 1 — Save Image to Device
+
+#### Desktop Browser (Chrome, Firefox, Edge, Safari)
+
+- Use native `<a download>` anchor with the pre-rendered summary image blob/URL
+- Filename format: `tarot-summary-{timestamp}.png`
+- Browser handles download to Downloads folder automatically
+- Fallback if anchor download fails: open image in new tab, user saves manually
+
+#### Mobile Browser (iOS Safari, Android Chrome)
+
+- Attempt direct save via `navigator.share()` with `files` option (Web Share API Level 2)
+  - If successful: image saved to Photos/Gallery via OS native share sheet
+- If `navigator.share` unavailable or fails: open image in a new fullscreen tab/window
+  - Display overlay instruction text: **"กดค้างที่รูปเพื่อบันทึกลงอุปกรณ์"** (long-press the image to save to your device)
+  - Provide a close/back button to return to the summary screen
+
+---
+
+### Action 2 — Show Happy Card on Frontend
+
+- After image save is initiated (not necessarily completed), immediately render the happy tarot card on the same screen
+- No page reload or navigation required
+- Happy card replaces or overlays the summary view (exact layout defined in component spec)
+- Final terminal state — no further interaction needed from this action
+
+---
+
+### User Feedback
+
+#### Success State
+
+- Display a toast/notification: **"บันทึกรูปแล้ว"** (Image saved)
+- Toast auto-dismisses after 3 seconds
+- Happy card is already visible as confirmation
+
+#### Error States
+
+| Error | Message Shown |
+|---|---|
+| Permission denied | "ไม่สามารถบันทึกรูปได้ กรุณาอนุญาตการเข้าถึงไฟล์" |
+| Storage full | "พื้นที่เก็บข้อมูลเต็ม กรุณาลบไฟล์บางส่วนแล้วลองใหม่" |
+| Unsupported browser | "เบราว์เซอร์นี้ไม่รองรับการบันทึกรูปโดยตรง กรุณาเปิดในเบราว์เซอร์อื่นหรือบันทึกรูปด้วยตนเอง" |
+| Network error / image load fail | "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง" |
+
+- All error messages displayed as toast notifications with distinct styling (error color)
+- Happy card is still shown after error — user is not blocked from the reward state
+
+---
+
+### Race Condition Prevention
+
+- On button tap: immediately disable the button (prevent further clicks)
+- Keep button disabled until the save action completes or fails
+- If user taps multiple times before the first save completes, only the first trigger is honored
+- After error recovery, re-enable the button so user can retry
+
+---
+
+### Summary Image Generation
+
+- The 5-card summary image is pre-rendered as a static composite image at page load (no dynamic assembly on save)
+- Image resolution: 1080×1920 px (portrait, optimized for mobile sharing)
+- Stored as a blob URL or `data:` URL accessible for both download anchor and share API
+- Asset path: `assets/summary/summary-5card.png` (pre-generated static asset)
+
+---
+
+### Save 5-Card Summary Acceptance Criteria
+
+- [ ] On desktop browser, tapping "บันทึกรูปเพื่อสแกน QR code" downloads the summary PNG to the Downloads folder
+- [ ] On iOS Safari, tapping the button opens the share sheet and saves the image to Photos
+- [ ] On Android Chrome, tapping the button saves the image to Gallery via share sheet
+- [ ] On mobile browsers where share API is unavailable, the image opens in a new view with Thai-language save instructions
+- [ ] The happy card appears on screen immediately after the save action is triggered (no reload)
+- [ ] A success toast "บันทึกรูปแล้ว" is displayed
+- [ ] Tapping the button multiple times rapidly only triggers one save (no duplicate downloads)
+- [ ] On permission denied, a descriptive Thai error toast is shown and the happy card is still displayed
+- [ ] On storage full, a descriptive Thai error toast is shown and the happy card is still displayed
+- [ ] On unsupported browser, fallback instructions are shown in Thai
+
 
 ### Assets Required
 
 - `assets/donation/death-card.png` — Death tarot card (front face, State A)
 - `assets/donation/qr-code.png` — static QR code image (back face, State B/C)
 - `assets/donation/happy-card.png` — happy tarot card (final reward state, State D)
+- `assets/summary/summary-5card.png` — pre-rendered 5-card summary composite image (1080×1920 px)
 
 ## Key Entities
 
@@ -182,6 +281,7 @@ Category    → { icon, outcomes[5], questions[10] }
 Question    → { text, context, A: {path, trade}, B: {path, trade} }
 DrawnCard  → { choiceLabel: 'A'|'B', questionText }  (internal — not shown to user)
 Analysis    → { isClustered, isAlternating, dominantChoice }  (no score disclosed)
+SaveResult  → { status: 'success'|'error', errorType?: 'permission_denied'|'storage_full'|'unsupported'|'network_error' }
 ```
 
 ## Success Criteria
