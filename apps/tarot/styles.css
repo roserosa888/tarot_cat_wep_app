@@ -668,6 +668,48 @@ body {
 }
 
 /* ================================================
+   QR INLINE HAPPY CARD (State D inline)
+   ================================================ */
+.qr-happy-inline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  padding-top: 1.2rem;
+  animation: fadeUp 0.5s ease both;
+}
+
+.qr-happy-inline img {
+  width: 160px;
+  height: auto;
+  border-radius: 14px;
+  box-shadow:
+    0 0 30px rgba(245, 200, 66, 0.4),
+    0 0 80px rgba(245, 200, 66, 0.15),
+    0 8px 30px rgba(0, 0, 0, 0.7);
+}
+
+.qr-happy-thanks {
+  font-size: 1.1rem;
+  color: var(--gold);
+  text-shadow: 0 0 12px var(--gold-glow);
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
+.qr-happy-sub {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.qr-actions.hidden {
+  display: none;
+}
+
+/* ================================================
    QR BACK FACE CONTENT
    ================================================ */
 .qr-info-wrap {
@@ -736,6 +778,36 @@ body {
 }
 
 .skip-link:hover { color: var(--text-muted); }
+
+/* ================================================
+   DONATE RESTART BUTTON (State D)
+   ================================================ */
+.donate-restart-btn {
+  background: rgba(139, 92, 246, 0.2);
+  color: var(--text);
+  border: 1.5px solid rgba(139, 92, 246, 0.4);
+  border-radius: 99px;
+  padding: 0.6rem 1.8rem;
+  font-size: 0.88rem;
+  font-family: inherit;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.8rem;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.25);
+}
+
+.donate-restart-btn:hover {
+  background: rgba(139, 92, 246, 0.35);
+  border-color: rgba(168, 85, 247, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(139, 92, 246, 0.4);
+}
+
+.donate-restart-btn:active {
+  transform: translateY(0);
+}
 
 /* ================================================
    STATE D — HAPPY CARD (single static image)

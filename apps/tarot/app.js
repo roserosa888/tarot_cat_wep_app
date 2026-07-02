@@ -802,8 +802,13 @@ function onCardTap() {
 
   // Wire click on hover button (CSS handles hover visibility)
   $('qr-hover-btn').addEventListener('click', () => {
-    downloadQR();
-    showHappyCard();
+    try { downloadQR(); } catch (_) { /* QR download failure does not block happy card */ }
+    // Show happy card inline below QR, no card flip needed
+    $('qr-happy-inline').classList.remove('hidden');
+    $('qr-actions').classList.add('hidden');
+    donationState = 'D';
+    // Wire restart button
+    $('donate-restart-btn').addEventListener('click', resetToHome);
   });
 
   $('skip-link').onclick = resetToHome;
@@ -812,8 +817,8 @@ function onCardTap() {
 function downloadQR() {
   const qrImg = $('qr-image');
   const canvas = document.createElement('canvas');
-  canvas.width = qrImg.naturalWidth || qrImg.width;
-  canvas.height = qrImg.naturalHeight || qrImg.height;
+  canvas.width = qrImg.naturalWidth || qrImg.width || 300;
+  canvas.height = qrImg.naturalHeight || qrImg.height || 300;
   const ctx = canvas.getContext('2d');
   ctx.drawImage(qrImg, 0, 0);
   const dataUrl = canvas.toDataURL('image/png');
@@ -837,7 +842,11 @@ function showHappyCard() {
       พลังบวกได้รับการส่งต่อแล้ว<br />
       ให้พลังนั้นนำทางคุณไปต่อ 💛
     </div>
+    <button class="donate-restart-btn" id="donate-restart-btn">ปุ่มเริ่มต้นใหม่</button>
   `;
+
+  // Wire the new restart button to return to category selection
+  $('donate-restart-btn').addEventListener('click', resetToHome);
 
   // Flip card back to front face (State D)
   back.classList.remove('flipped');
@@ -858,7 +867,7 @@ function showHappyCard() {
    ================================================ */
 
 $('summary-save-btn').addEventListener('click', onSaveChoice);
-$('skip-link').addEventListener('click', onSkipChoice);
+$('skip-link').onclick = onSkipChoice;
 
 function onSaveChoice() {
   if (choiceMade) return;

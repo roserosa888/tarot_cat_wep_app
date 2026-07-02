@@ -15,7 +15,7 @@ A Thai-language tarot web app where users answer 10 binary (A/B) fork questions 
 - **US3 — Receive a Single Outcome Card** (P1): After Q10, score 0–10 maps to one of 5 outcome cards per category. Card image (existing PNG asset) reveals with animation. Acceptance: exactly 1 card shown; correct card for score range; animated reveal.
 - **US4 — Read a Personalized Narrative** (P2): The narrative synthesizes the user's answer pattern (streaks, balance, dominant choice) into a life-reading paragraph for the category. Acceptance: narrative references actual A/B pattern; unique per user.
 - **US5 — Restart and Try Another Category** (P3): User can restart at any time and choose a different category. Acceptance: restart button visible on summary; returns to category select.
-- **US6 — Donate Section** (P2): After viewing the result card, a Death tarot card is displayed below the summary. Tapping it flips to a QR code (3D rotate animation). Hovering over the QR shows a clickable "บันทึกรูปเพื่อแสดงการ์ตีใจ" button. Tapping it saves the QR to device and flips the card back to show a happy tarot card as the final reward state. A "ไม่สะดวกโอน" skip link is available from the QR state to return to category selection.
+- **US6 — Donate Section** (P2): After viewing the result card, a sad tarot card (`sad-card.png`) is displayed below the summary. Tapping it flips to a QR code (3D rotate animation). Hovering over the QR shows a clickable `qr-hover-btn` ("บันทึกรูปเพื่อสแกน"). Tapping it saves the QR to device and flips the card back to show a happy tarot card (`card-03.png`) as the final reward state. A "ไม่สะดวกโอน" skip link is available from the QR state to return to category selection.
 - **US7 — Save 5-Card Summary Image** (P1): When user taps "บันทึกรูปเพื่อสแกน QR code" on the 5-card summary result screen, the system simultaneously saves the summary image to the user's device and shows a happy card on the frontend without a page reload. On desktop browsers, the image downloads to the user's Downloads folder. On mobile (iOS Safari / Android Chrome), the image saves to the device gallery; if direct save is unsupported, a fallback opens the image for long-press save with user guidance.
 
 ## Scoring System
@@ -99,6 +99,7 @@ Pattern detection uses:
 - Order on result screen:
   1. 5-card reading summary (per-category results)
   2. Donate section
+- **Note**: The Donate section's `qr-hover-btn` ("บันทึกรูปเพื่อสแกน") is distinct from the US7 `summary-save-btn`. The `summary-save-btn` appears on the 5-card summary screen and saves the summary PNG to device; the `qr-hover-btn` is inside the donate section and saves the QR code image then flips to the Happy Card.
 
 ---
 
@@ -106,45 +107,43 @@ Pattern detection uses:
 
 | State | What User Sees |
 |---|---|
-| A | Death Card (front face) |
-| B | QR Code (back face, after flip) |
-| C | QR Code + hover text visible |
-| D | Happy Card (front face, final state) |
+| A | Sad Card — front face (`sad-card.png`) |
+| B | QR Code — back face, after flip |
+| C | QR Code + `qr-hover-btn` visible on hover |
+| D | Happy Card — front face (`card-03.png`), final state |
 
 ---
 
-### State A — Death Card (Initial, Start Period)
+### State A — Sad Card (Initial, Start Period)
 
-- Display the Death tarot card image as the default state
-- **Start period**: the initial moment when the donate section first renders. During this period, "บันทึกรูปเพื่อสแกน QR code" and "เริ่มใหม่" buttons are NOT rendered / NOT visible in the donate section. (These are separate from the summary screen's restart button.)
-- **"สนับสนุนค่าขนม"** text displayed ABOVE the Death card — always visible during the start period and remains visible up until the card flip animation begins (the last thing the user sees before the flip).
-- On hover: show text **"สแกนเพื่อส่งต่อพลังบวกให้ผู้สร้างแอป"** ABOVE the card image (in addition to the always-visible start-period text)
-  - Fade-in transition: opacity 0 → 1
-  - Text disappears when mouse leaves
-- On click: trigger card flip animation → transition to State B
+- Display the sad tarot card image (`assets/donation/sad-card.png`) as the default state
+- **Start period**: the initial moment when the donate section first renders. During this period, `qr-hover-btn` ("บันทึกรูปเพื่อสแกน") and "เริ่มใหม่" buttons are NOT rendered / NOT visible in the donate section. (These are separate from the summary screen's restart button.)
+- **"สนับสนุนค่าขนม"** text displayed ABOVE the sad card via `donate-label-above` — always visible during the start period and remains visible until the card flip animation begins. It is hidden via JS in `onCardTap()` when flip begins.
+- **Hover text**: `state-a-hover-text` element ("คลิกเพื่อสแกนเพื่อส่งต่อพลังบวกให้ผู้สร้างแอป") is **always in the DOM** (hardcoded in HTML). CSS handles show/hide: opacity 0 by default, transitions to opacity 1 on `.card-front:hover`. Text disappears when mouse leaves.
+- On click (of the card): trigger card flip animation → transition to State B
 
 ---
 
 ### State B / C — QR Code (Back Face)
 
-- Card flips (3D rotate animation) to reveal a static pre-uploaded QR code image on the back
-- On hover over QR code image:
-  - Display clickable button text: **"บันทึกรูปเพื่อสแกน QR code"** (saves the QR code image to your computer or phone) overlaid on or above the QR image
-  - Fade-in transition: opacity 0 → 1
-  - This text is a BUTTON, not decorative label
-- On click of the button: trigger TWO sequential actions:
-  1. Download / save the QR code image to the user's device (computer or phone)
-  2. Immediately transition to State D (Happy Card) — card flips back to front face, displaying the happy tarot card
+- Card flips (3D rotate animation) to reveal a static pre-uploaded QR code image (`assets/donation/qr-code.png`) on the back
+- **Note**: `qr-hover-btn` ("บันทึกรูปเพื่อสแกน") is always in the DOM inside `#qr-actions`. CSS shows it on hover of `#qr-wrap`. It is a clickable BUTTON, not a decorative label.
+- On click of `qr-hover-btn`: trigger TWO sequential actions:
+  1. `downloadQR()` — save the QR code image to the user's device (canvas → anchor download)
+  2. `showHappyCard()` — immediately transition to State D (Happy Card), replacing the front face content with the happy card
 - Below the QR image: small, thin, low-emphasis text link **"ไม่สะดวกโอน"**
-  - On click: navigate user back to category selection page
+  - On click: navigate user back to category selection page via `resetToHome()`
   - Ends the flow without showing the Happy Card
 
 ---
 
 ### State D — Happy Card (Final State)
 
-- Happy tarot card displayed as a single static image on the front face
-- No further flip or interaction required
+- Happy tarot card image (`assets/happy/card-03.png`) replaces the front face content via `showHappyCard()`
+- Displays "ขอบคุณที่สนับสนุน! ✨" heading and sub-text below the image
+- `donate-restart-btn` ("ปุ่มเริ่มต้นใหม่") rendered inside the donate section below the happy card image
+- On click: calls `resetToHome()` → returns to category selection
+- No further flip or interaction required beyond the restart button
 - No back face — this is the terminal state of the donate section
 
 ---
@@ -153,7 +152,9 @@ Pattern detection uses:
 
 - "ไม่สะดวกโอน" text is available in State B and C only
 - Styled as: small font size, thin font weight, low opacity — not a prominent button
-- On click: return to category selection page, donate flow ends
+- On click: return to category selection page via `resetToHome()`, donate flow ends
+- `donate-restart-btn` ("ปุ่มเริ่มต้นใหม่") is available in State D (after happy card appears)
+- On click: return to category selection page via `resetToHome()`, donate flow ends
 
 ---
 
@@ -168,13 +169,15 @@ Pattern detection uses:
 
 ### Acceptance Criteria
 
-- Given State A, when user is in the start period (before any interaction with the Death card), "บันทึกรูปเพื่อสแกน QR code" and "เริ่มใหม่" are NOT visible in the donate section
-- Given State A, when user hovers the Death Card, then hover text appears above the image with fade-in
-- Given State A, when user clicks the Death Card, then card flips to show QR code (State B)
-- Given State B, when user hovers the QR image, then clickable button "บันทึกรูปเพื่อสแกน QR code" appears
-- Given State C, when user clicks the hover text, then QR is saved to device AND Happy Card is shown (State D)
-- Given State B or C, when user clicks "ไม่สะดวกโอน", then app navigates back to category selection
-- Given State D, the Happy Card is shown as a single static image with no further interaction needed
+- Given State A, when user is in the start period (before any interaction with the sad card), `qr-hover-btn` and "เริ่มใหม่" are NOT visible in the donate section
+- Given State A, when user hovers the sad card, `state-a-hover-text` appears above the image via CSS opacity transition
+- Given State A, when user clicks the sad card, then card flips to show QR code (State B)
+- Given State B, when user hovers `#qr-wrap`, then `qr-hover-btn` is visible (CSS hover)
+- Given State C, when user clicks `qr-hover-btn`, then QR is saved to device AND Happy Card is shown (State D)
+- Given State B or C, when user clicks "ไม่สะดวกโอน", then app navigates back to category selection via `resetToHome()`
+- Given State D, `donate-restart-btn` ("ปุ่มเริ่มต้นใหม่") is visible in the donate section below the happy card
+- Given State D, when user clicks `donate-restart-btn`, then app navigates back to category selection via `resetToHome()`
+- Given State D, the Happy Card is shown with no further interaction needed beyond the restart button
 - The QR code is a fixed static asset — no payment gateway, no verification, no slip upload
 
 ## Save 5-Card Summary Image
@@ -271,9 +274,9 @@ Pattern detection uses:
 
 ### Assets Required
 
-- `assets/donation/death-card.png` — Death tarot card (front face, State A)
+- `assets/donation/sad-card.png` — sad tarot card image (front face, State A)
 - `assets/donation/qr-code.png` — static QR code image (back face, State B/C)
-- `assets/donation/happy-card.png` — happy tarot card (final reward state, State D)
+- `assets/happy/card-03.png` — happy tarot card (final reward state, State D)
 - `assets/summary/summary-5card.png` — pre-rendered 5-card summary composite image (1080×1920 px)
 
 ## Key Entities
