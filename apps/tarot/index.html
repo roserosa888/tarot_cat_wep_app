@@ -87,7 +87,9 @@
         <div class="summary-narrative" id="summary-narrative"></div>
 
         <div class="donate-section" id="donate-section">
-          <p class="donate-label">สนับสนุนค่าขนม</p>
+          <p class="donate-choice-label hidden" id="donate-choice-label">เลือกวิธีที่สะดวก</p>
+          <button class="summary-save-btn hidden" id="summary-save-btn">บันทึกรูปเพื่อสแกน QR code</button>
+          <button class="skip-link hidden" id="skip-link">ไม่สะดวกโอน</button>
           <div class="card-interaction-area" id="card-interaction-area">
             <div class="card-face card-front" id="card-front">
               <div class="state-a-hover-text" id="state-a-hover-text">
@@ -103,16 +105,14 @@
                     บันทึกรูปเพื่อสแกน
                   </button>
                 </div>
-                <button class="skip-link" id="skip-link">ไม่สะดวกโอน</button>
               </div>
             </div>
           </div>
         </div>
 
-        <button class="summary-save-btn" id="summary-save-btn">บันทึกรูปเพื่อสแกน QR code</button>
         <div class="happy-inline hidden" id="happy-inline"></div>
 
-        <button class="btn-glow" id="restart-btn" style="margin-top: 1.5rem;">เริ่มใหม่</button>
+        <button class="btn-glow hidden" id="restart-btn">เริ่มใหม่</button>
 
       </div>
     </div>

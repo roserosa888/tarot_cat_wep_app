@@ -414,10 +414,19 @@ body {
   margin: 1.5rem 0 1rem;
 }
 
-/* Hide summary-save-btn and restart-btn during State A start period */
-#summary-save-btn.state-a,
-#restart-btn.state-a {
+/* Hide elements that are revealed after card flip */
+#donate-choice-label.hidden,
+#summary-save-btn.hidden,
+#skip-link.hidden,
+#restart-btn.hidden {
   display: none;
+}
+
+.donate-choice-label {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+  text-align: center;
 }
 
 .donate-label {

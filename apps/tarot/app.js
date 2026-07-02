@@ -605,6 +605,7 @@ let currentCategory = null;
 let currentQ = 0;
 let drawnCards = []; // { choiceLabel: 'A'|'B', questionText }
 let donationState = null; // 'A'|'B'|'C'|'D'|null
+let choiceMade = false;
 
 /* ================================================
    DOM HELPERS
@@ -762,15 +763,13 @@ function showSummary() {
     <img id="donate-sad-img" src="assets/donation/sad-card.png" alt="สนับสนุน" />
   `;
 
-  // Show donate section (Death card starts in State A — buttons hidden by CSS start-period rule)
+  // Show donate section (Death card starts in State A)
   $('donate-section').classList.remove('hidden');
   $('donate-section').classList.add('state-a');
-  $('summary-save-btn').classList.add('state-a');
-  $('restart-btn').classList.add('state-a');
 
-  // Summary screen buttons always visible — not affected by donate section State A
-  $('summary-save-btn').classList.remove('hidden');
-  $('restart-btn').classList.remove('hidden');
+  // Reset choice state — buttons hidden until card flips, restart hidden
+  choiceMade = false;
+  $('restart-btn').classList.add('hidden');
 
   donationState = 'A';
   wrap.onclick = onCardTap;
@@ -796,8 +795,11 @@ function onCardTap() {
   donationState = 'B';
   $('card-interaction-area').onclick = null;
   $('donate-section').classList.remove('state-a');
-  $('summary-save-btn').classList.remove('state-a');
-  $('restart-btn').classList.remove('state-a');
+
+  // Reveal heading + two choice buttons after the card flips
+  $('donate-choice-label').classList.remove('hidden');
+  $('summary-save-btn').classList.remove('hidden');
+  $('skip-link').classList.remove('hidden');
 
   // Wire click on hover button (CSS handles hover visibility)
   $('qr-hover-btn').addEventListener('click', () => {
@@ -856,9 +858,14 @@ function showHappyCard() {
    US7 — SAVE 5-CARD SUMMARY IMAGE + HAPPY CARD
    ================================================ */
 
-$('summary-save-btn').addEventListener('click', () => {
+$('summary-save-btn').addEventListener('click', onSaveChoice);
+$('skip-link').addEventListener('click', onSkipChoice);
+
+function onSaveChoice() {
+  if (choiceMade) return;
+  choiceMade = true;
+  $('skip-link').classList.add('hidden');
   const btn = $('summary-save-btn');
-  if (btn.disabled) return;
   btn.disabled = true;
 
   saveSummaryImage()
@@ -866,13 +873,22 @@ $('summary-save-btn').addEventListener('click', () => {
       showToast('บันทึกรูปแล้ว', 'success');
     })
     .catch(err => {
-      showToast(getErrorMessage(err.type), 'error');
+      const msg = getErrorMessage(err.type);
+      if (msg) showToast(msg, 'error');
     })
     .finally(() => {
       showHappyInline();
       btn.disabled = false;
+      $('restart-btn').classList.remove('hidden');
     });
-});
+}
+
+function onSkipChoice() {
+  if (choiceMade) return;
+  choiceMade = true;
+  $('summary-save-btn').classList.add('hidden');
+  $('restart-btn').classList.remove('hidden');
+}
 
 function saveSummaryImage() {
   return new Promise((resolve, reject) => {
@@ -1011,9 +1027,10 @@ function resetToHome() {
   currentQ = 0;
   drawnCards = [];
   donationState = null;
+  choiceMade = false;
   $('donate-section').classList.remove('state-a');
-  $('summary-save-btn').classList.remove('state-a');
-  $('restart-btn').classList.remove('state-a');
+  $('summary-save-btn').classList.add('hidden');
+  $('skip-link').classList.add('hidden');
   showScreen('select');
 }
 
