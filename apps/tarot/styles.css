@@ -414,11 +414,23 @@ body {
   margin: 1.5rem 0 1rem;
 }
 
+/* "สนับสนุนค่าขนม" — always visible above the card, before flip */
+.donate-label-above {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-align: center;
+  margin-bottom: 0.4rem;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
 /* Hide elements that are revealed after card flip */
 #donate-choice-label.hidden,
 #summary-save-btn.hidden,
 #skip-link.hidden,
-#restart-btn.hidden {
+#restart-btn.hidden,
+#donate-label-above.hidden {
   display: none;
 }
 

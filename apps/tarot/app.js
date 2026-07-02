@@ -754,11 +754,12 @@ function showSummary() {
   $('card-back').classList.remove('flipped');
   $('card-back').classList.add('hidden');
   $('card-front').classList.remove('hidden');
+  $('donate-label-above').classList.remove('hidden');
 
   // Restore front face to Death card
   $('card-front').innerHTML = `
     <div class="state-a-hover-text" id="state-a-hover-text">
-      สแกนเพื่อส่งต่อพลังบวกให้ผู้สร้างแอป
+      คลิกสแกนเพื่อส่งต่อพลังบวกให้ผู้สร้างแอป
     </div>
     <img id="donate-sad-img" src="assets/donation/sad-card.png" alt="สนับสนุน" />
   `;
@@ -795,6 +796,7 @@ function onCardTap() {
   donationState = 'B';
   $('card-interaction-area').onclick = null;
   $('donate-section').classList.remove('state-a');
+  $('donate-label-above').classList.add('hidden');
 
   // Reveal heading + two choice buttons after the card flips
   $('donate-choice-label').classList.remove('hidden');

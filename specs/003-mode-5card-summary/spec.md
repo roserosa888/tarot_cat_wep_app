@@ -117,7 +117,8 @@ Pattern detection uses:
 
 - Display the Death tarot card image as the default state
 - **Start period**: the initial moment when the donate section first renders. During this period, "บันทึกรูปเพื่อสแกน QR code" and "เริ่มใหม่" buttons are NOT rendered / NOT visible in the donate section. (These are separate from the summary screen's restart button.)
-- On hover: show text **"สแกนเพื่อส่งต่อพลังบวกให้ผู้สร้างแอป"** ABOVE the card image
+- **"สนับสนุนค่าขนม"** text displayed ABOVE the Death card — always visible during the start period and remains visible up until the card flip animation begins (the last thing the user sees before the flip).
+- On hover: show text **"สแกนเพื่อส่งต่อพลังบวกให้ผู้สร้างแอป"** ABOVE the card image (in addition to the always-visible start-period text)
   - Fade-in transition: opacity 0 → 1
   - Text disappears when mouse leaves
 - On click: trigger card flip animation → transition to State B
