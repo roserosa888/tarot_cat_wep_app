@@ -2,7 +2,7 @@
 
 **Feature Branch**: `003-mode-5card-summary`
 **Created**: 2026-06-26 | **Status**: Active
-**Updated**: 2026-07-02 | Added US7 — save 5-card summary image
+**Updated**: 2026-07-02 | Added US7 — save 5-card summary image | Clarified State A start period button visibility
 
 ## Overview
 
@@ -113,9 +113,10 @@ Pattern detection uses:
 
 ---
 
-### State A — Death Card (Initial)
+### State A — Death Card (Initial, Start Period)
 
 - Display the Death tarot card image as the default state
+- **Start period**: the initial moment when the donate section first renders. During this period, "บันทึกรูปเพื่อสแกน QR code" and "เริ่มใหม่" buttons are NOT rendered / NOT visible in the donate section. (These are separate from the summary screen's restart button.)
 - On hover: show text **"สแกนเพื่อส่งต่อพลังบวกให้ผู้สร้างแอป"** ABOVE the card image
   - Fade-in transition: opacity 0 → 1
   - Text disappears when mouse leaves
@@ -166,6 +167,7 @@ Pattern detection uses:
 
 ### Acceptance Criteria
 
+- Given State A, when user is in the start period (before any interaction with the Death card), "บันทึกรูปเพื่อสแกน QR code" and "เริ่มใหม่" are NOT visible in the donate section
 - Given State A, when user hovers the Death Card, then hover text appears above the image with fade-in
 - Given State A, when user clicks the Death Card, then card flips to show QR code (State B)
 - Given State B, when user hovers the QR image, then clickable button "บันทึกรูปเพื่อสแกน QR code" appears

@@ -414,6 +414,12 @@ body {
   margin: 1.5rem 0 1rem;
 }
 
+/* Hide summary-save-btn and restart-btn during State A start period */
+#summary-save-btn.state-a,
+#restart-btn.state-a {
+  display: none;
+}
+
 .donate-label {
   font-size: 0.85rem;
   color: var(--text-dim);

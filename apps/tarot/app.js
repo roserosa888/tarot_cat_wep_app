@@ -762,8 +762,15 @@ function showSummary() {
     <img id="donate-sad-img" src="assets/donation/sad-card.png" alt="สนับสนุน" />
   `;
 
-  // Show donate section
+  // Show donate section (Death card starts in State A — buttons hidden by CSS start-period rule)
   $('donate-section').classList.remove('hidden');
+  $('donate-section').classList.add('state-a');
+  $('summary-save-btn').classList.add('state-a');
+  $('restart-btn').classList.add('state-a');
+
+  // Summary screen buttons always visible — not affected by donate section State A
+  $('summary-save-btn').classList.remove('hidden');
+  $('restart-btn').classList.remove('hidden');
 
   donationState = 'A';
   wrap.onclick = onCardTap;
@@ -788,6 +795,9 @@ function onCardTap() {
 
   donationState = 'B';
   $('card-interaction-area').onclick = null;
+  $('donate-section').classList.remove('state-a');
+  $('summary-save-btn').classList.remove('state-a');
+  $('restart-btn').classList.remove('state-a');
 
   // Wire click on hover button (CSS handles hover visibility)
   $('qr-hover-btn').addEventListener('click', () => {
@@ -1001,6 +1011,9 @@ function resetToHome() {
   currentQ = 0;
   drawnCards = [];
   donationState = null;
+  $('donate-section').classList.remove('state-a');
+  $('summary-save-btn').classList.remove('state-a');
+  $('restart-btn').classList.remove('state-a');
   showScreen('select');
 }
 
