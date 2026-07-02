@@ -15,7 +15,7 @@ A Thai-language tarot web app where users answer 10 binary (A/B) fork questions 
 - **US3 — Receive a Single Outcome Card** (P1): After Q10, score 0–10 maps to one of 5 outcome cards per category. Card image (existing PNG asset) reveals with animation. Acceptance: exactly 1 card shown; correct card for score range; animated reveal.
 - **US4 — Read a Personalized Narrative** (P2): The narrative synthesizes the user's answer pattern (streaks, balance, dominant choice) into a life-reading paragraph for the category. Acceptance: narrative references actual A/B pattern; unique per user.
 - **US5 — Restart and Try Another Category** (P3): User can restart at any time and choose a different category. Acceptance: restart button visible on summary; returns to category select.
-- **US6 — Donation Page (Post-Result Screen)** (P2): After viewing the result card, a sad tarot card is displayed. Tapping it reveals a QR code (flip animation). Tapping again shows a "Save QR Image" button. Tapping Save flips to reveal a happy tarot card. A skip option navigates back to category selection.
+- **US6 — Donate Section** (P2): After viewing the result card, a Death tarot card is displayed below the summary. Tapping it flips to a QR code (3D rotate animation). Hovering over the QR shows a clickable "บันทึกรูปเพื่อแสดงการ์ตีใจ" button. Tapping it saves the QR to device and flips the card back to show a happy tarot card as the final reward state. A "ไม่สะดวกโอน" skip link is available from the QR state to return to category selection.
 
 ## Scoring System
 
@@ -84,39 +84,95 @@ Pattern detection uses:
 - `isAlternating` — exact ABAB... pattern
 - `dominantChoice` — A-dominant, B-dominant, or balanced
 
-## Donation Page (Post-Result Screen)
+## Donate Section
 
-### Flow
+### Placement
 
-1. **Sad Card (Initial State)**: After quiz results, display the "sad" tarot card as the default state.
-2. **Tap 1 — Flip to QR**: User taps the sad card → card flips (rotate animation) → back side reveals the QR code image.
-3. **Tap 2 — Show Save Button**: User taps the QR code again → a "Save QR Image" button appears below/over the QR code.
-4. **Tap Save → Unlock Happy Card**: User taps "Save QR Image" → this single action (no transfer verification needed) triggers the card to flip again → reveals the "happy" tarot card, shown as a single static image (no further flip/back side).
-5. **Skip Option**: Below the QR code image, show small, thin, low-emphasis text: "ไม่สะดวกโอน" (Not convenient to transfer now). Tapping this text navigates the user back to the category selection page, ending the flow without showing the happy card.
+- Positioned directly below the 5-card summary result on the same result page
+- Not a separate route/page — renders as the next section after the summary within the same view
+- Order on result screen:
+  1. 5-card reading summary (per-category results)
+  2. Donate section
 
-### Card States Summary
+---
 
-| State | Description |
+### Card States (Single Card Component, 4 States)
+
+| State | What User Sees |
 |---|---|
-| State A | Sad card (front) — default initial state |
-| State B | Sad card flipped → QR code (back) |
-| State C | QR code + "Save QR Image" button visible |
-| State D | Happy card (single image, final state) |
-| Exit | "ไม่สะดวกโอน" text link → back to category selection (available from State B/C) |
+| A | Death Card (front face) |
+| B | QR Code (back face, after flip) |
+| C | QR Code + hover text visible |
+| D | Happy Card (front face, final state) |
+
+---
+
+### State A — Death Card (Initial)
+
+- Display the Death tarot card image as the default state
+- On hover: show text **"สแกนเพื่อส่งต่อพลังบวกให้ผู้สร้างแอป"** ABOVE the card image
+  - Fade-in transition: opacity 0 → 1
+  - Text disappears when mouse leaves
+- On click: trigger card flip animation → transition to State B
+
+---
+
+### State B / C — QR Code (Back Face)
+
+- Card flips (3D rotate animation) to reveal a static pre-uploaded QR code image on the back
+- On hover over QR code image:
+  - Display clickable text: **"บันทึกรูปเพื่อสแกน"** (the QR code image will be saved to your computer or phone) overlaid on or above the QR image
+  - Fade-in transition: opacity 0 → 1
+  - This text is a BUTTON, not decorative label
+- On click of hover text: trigger TWO sequential actions:
+  1. Save / download the QR code image to user's device
+  2. Immediately transition to State D (Happy Card) — card flips back to front face
+- Below the QR image: small, thin, low-emphasis text link **"ไม่สะดวกโอน"**
+  - On click: navigate user back to category selection page
+  - Ends the flow without showing the Happy Card
+
+---
+
+### State D — Happy Card (Final State)
+
+- Happy tarot card displayed as a single static image on the front face
+- No further flip or interaction required
+- No back face — this is the terminal state of the donate section
+
+---
+
+### Skip / Exit Flow
+
+- "ไม่สะดวกโอน" text is available in State B and C only
+- Styled as: small font size, thin font weight, low opacity — not a prominent button
+- On click: return to category selection page, donate flow ends
+
+---
+
+### QR Code Asset
+
+- Static, pre-uploaded image (no dynamic generation)
+- No backend payment verification
+- No slip upload required
+- Saving the QR image is the sole trigger to unlock the Happy Card (trust-based)
+
+---
 
 ### Acceptance Criteria
 
-- **AC-D01**: Given the result screen shows the sad card, when the user taps it, then the card flips to show the QR code.
-- **AC-D02**: Given the QR code is shown, when the user taps it again, then a "Save QR Image" button appears.
-- **AC-D03**: Given the "Save QR Image" button is visible, when the user taps it, then the happy card is displayed as a single static image — no payment/transfer verification is performed or required.
-- **AC-D04**: Given the QR code or save-button state is shown, when the user taps "ไม่สะดวกโอน," then the app navigates back to the category selection screen.
-- **AC-D05**: The QR code image is static and pre-uploaded (no dynamic generation, no backend check).
+- Given State A, when user hovers the Death Card, then hover text appears above the image with fade-in
+- Given State A, when user clicks the Death Card, then card flips to show QR code (State B)
+- Given State B, when user hovers the QR image, then clickable text "บันทึกรูปเพื่อสแกน" appears
+- Given State C, when user clicks the hover text, then QR is saved to device AND Happy Card is shown (State D)
+- Given State B or C, when user clicks "ไม่สะดวกโอน", then app navigates back to category selection
+- Given State D, the Happy Card is shown as a single static image with no further interaction needed
+- The QR code is a fixed static asset — no payment gateway, no verification, no slip upload
 
 ### Assets Required
 
-- `assets/donation/sad-card.png` — sad tarot card (front of flip card)
-- `assets/donation/happy-card.png` — happy tarot card (final reward state)
-- `assets/donation/qr-code.png` — static QR code image (back of flip card)
+- `assets/donation/death-card.png` — Death tarot card (front face, State A)
+- `assets/donation/qr-code.png` — static QR code image (back face, State B/C)
+- `assets/donation/happy-card.png` — happy tarot card (final reward state, State D)
 
 ## Key Entities
 

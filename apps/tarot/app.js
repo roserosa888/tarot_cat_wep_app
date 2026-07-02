@@ -753,11 +753,15 @@ function showSummary() {
   $('card-back').classList.remove('flipped');
   $('card-back').classList.add('hidden');
   $('card-front').classList.remove('hidden');
-  // Restore front face to sad card
-  $('card-front').innerHTML = `<img id="donate-sad-img" src="assets/donation/sad-card.png" alt="สนับสนุน" />`;
-  // Hide save button
-  const saveWrap = $('save-btn-wrap');
-  if (saveWrap) saveWrap.classList.add('hidden');
+
+  // Restore front face to Death card
+  $('card-front').innerHTML = `
+    <div class="state-a-hover-text" id="state-a-hover-text">
+      สแกนเพื่อส่งต่อพลังบวกให้ผู้สร้างแอป
+    </div>
+    <img id="donate-sad-img" src="assets/donation/sad-card.png" alt="สนับสนุน" />
+  `;
+
   // Show donate section
   $('donate-section').classList.remove('hidden');
 
@@ -767,15 +771,16 @@ function showSummary() {
 
 /* ================================================
    DONATION STATE MACHINE
-   State A: sad card front — tap → flip to QR back (State B)
-   State B: QR back visible — tap QR → show save button (State C)
-   State C: save button visible — tap Save → show happy card (State D)
-   State B/C: tap "ไม่สะดวกโอน" → resetToHome()
+   State A: Death card front — click → flip to QR back (State B)
+   State B: QR back visible — hover QR → show hover button (State C)
+   State C: hover button visible — click button → save QR + flip to happy (State D)
+   State B/C: click "ไม่สะดวกโอน" → resetToHome()
    ================================================ */
 
 function onCardTap() {
   if (donationState !== 'A') return;
-  // Flip card to QR back
+
+  // Flip card to QR back (State B)
   $('card-front').classList.add('flipped');
   $('card-back').classList.remove('hidden');
   void $('card-back').offsetWidth;
@@ -783,46 +788,58 @@ function onCardTap() {
 
   donationState = 'B';
   $('card-interaction-area').onclick = null;
-  $('qr-wrap').onclick = onQRTap;
+
+  // Wire click on hover button (CSS handles hover visibility)
+  $('qr-hover-btn').addEventListener('click', () => {
+    downloadQR();
+    showHappyCard();
+  });
+
   $('skip-link').onclick = resetToHome;
 }
 
-function onQRTap() {
-  if (donationState !== 'B') return;
-  // Show save button
-  $('save-btn-wrap').classList.remove('hidden');
-  donationState = 'C';
-  $('qr-wrap').onclick = null;
-  $('save-qr-btn').onclick = onSaveTap;
-  // skip-link stays wired
+function downloadQR() {
+  const qrImg = $('qr-image');
+  const canvas = document.createElement('canvas');
+  canvas.width = qrImg.naturalWidth || qrImg.width;
+  canvas.height = qrImg.naturalHeight || qrImg.height;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(qrImg, 0, 0);
+  const dataUrl = canvas.toDataURL('image/png');
+  const link = document.createElement('a');
+  link.href = dataUrl;
+  link.download = 'qr-code-donate.png';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
-function onSaveTap() {
-  if (donationState !== 'C') return;
-  // แสดง happy card แบบ static ใน front face แล้ว flip กลับ
+function showHappyCard() {
   const front = $('card-front');
   const back  = $('card-back');
+
+  // Replace front face with happy card
   front.innerHTML = `
-    <img id="summary-card-img" src="assets/happy/card-03.png" alt="ไพ่ทาโร่ต์มงคล" />
+    <img id="happy-final-img" src="assets/donation/happy-card.png" alt="ไพ่ทาโร่ต์มงคล" />
     <div class="happy-thanks-heading">ขอบคุณที่สนับสนุน! ✨</div>
     <div class="happy-thanks-sub">
       พลังบวกได้รับการส่งต่อแล้ว<br />
       ให้พลังนั้นนำทางคุณไปต่อ 💛
     </div>
   `;
-  // Flip กลับไป front
+
+  // Flip card back to front face (State D)
   back.classList.remove('flipped');
   void back.offsetHeight;
   back.classList.add('flipped');
   void front.offsetHeight;
   front.classList.remove('flipped');
-  // Hide back
   back.classList.add('hidden');
+
   donationState = 'D';
   $('card-interaction-area').style.cursor = 'default';
   $('card-interaction-area').onclick = null;
   $('skip-link').onclick = null;
-  $('save-qr-btn').onclick = null;
 }
 
 function resetToHome() {

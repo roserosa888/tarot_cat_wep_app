@@ -430,6 +430,7 @@ body {
   width: 200px;
   height: 280px;
   position: relative;
+  overflow: visible;
 }
 
 /* Glow behind card */
@@ -459,11 +460,50 @@ body {
 /* Front face: sad tarot card image */
 .card-front {
   transform: rotateY(0deg);
+  position: relative;
 }
 
 .card-front.flipped {
   transform: rotateY(180deg);
   opacity: 0;
+}
+
+/* State A hover text — overlaid ON TOP of card, prominent */
+.state-a-hover-text {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.82);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.55rem 1rem;
+  border-radius: 10px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  text-align: center;
+  z-index: 10;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  letter-spacing: 0.02em;
+}
+
+.state-a-hover-text::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.85);
+}
+
+/* State A: show hover text when front face is hovered */
+.card-front:hover .state-a-hover-text {
+  opacity: 1;
 }
 
 /* Back face: QR code — positioned absolutely so front faces it */
@@ -480,7 +520,18 @@ body {
   transform: rotateY(0deg);
 }
 
-.card-back .qr-wrap { cursor: pointer; }
+.qr-wrap {
+  background: rgba(10, 0, 20, 0.9);
+  border: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  cursor: default;
+}
+
+.qr-wrap:hover { cursor: default; }
 
 /* Card image inside front face */
 #summary-card-img,
@@ -602,50 +653,48 @@ body {
   padding: 1.5rem;
 }
 
-.qr-wrap {
-  background: rgba(10, 0, 20, 0.9);
-  border: none;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .qr-image {
   width: 260px;
   height: 290px;
   clip-path: inset(0 round 20px);
 }
 
-.save-btn-wrap {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.btn-save-qr {
-  background: linear-gradient(135deg, var(--purple), var(--purple-mid));
-  color: var(--gold);
-  border: 1.5px solid rgba(245, 200, 66, 0.3);
-  border-radius: 99px;
-  padding: 0.75rem 2.2rem;
-  font-size: 0.85rem;
-  font-family: inherit;
+/* Hover button overlaid on QR image — fade in on qr-wrap hover */
+.qr-hover-btn {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.82);
+  color: #fff;
+  font-size: 0.88rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
+  z-index: 10;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  letter-spacing: 0.02em;
   cursor: pointer;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
-  animation: fadeUp 0.4s ease both;
+  font-family: inherit;
 }
 
-.btn-save-qr:hover {
-  transform: translateY(-3px);
+/* Show on qr-wrap hover (State B→C) */
+.qr-wrap:hover .qr-hover-btn {
+  opacity: 1;
+}
+
+.qr-hover-btn:hover {
+  transform: translateX(-50%) translateY(-3px);
   box-shadow: 0 8px 30px rgba(139, 92, 246, 0.6);
 }
 
-.btn-save-qr:active { transform: translateY(0); }
+.qr-hover-btn:active { transform: translateX(-50%) translateY(0); }
 
 .skip-link {
   font-size: 0.78rem;
@@ -704,6 +753,7 @@ body {
   .category-card { padding: 1.1rem 0.5rem; font-size: 0.88rem; }
   .question-card { padding: 1.5rem 1.2rem; }
   .card-interaction-area { width: 170px; height: 238px; }
+  .state-a-hover-text { font-size: 0.82rem; padding: 0.5rem 0.85rem; bottom: 0.75rem; }
   #summary-card-img, #donate-sad-img { width: 170px; }
   .summary-narrative { padding: 1.3rem; }
   #happy-final-img { width: 170px; }
