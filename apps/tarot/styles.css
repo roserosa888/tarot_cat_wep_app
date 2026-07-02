@@ -676,6 +676,7 @@ body {
   align-items: center;
   gap: 1.1rem;
   padding: 1.5rem;
+  padding-bottom: 15rem;
 }
 
 .qr-image {
