@@ -746,37 +746,24 @@ function showSummary() {
   $('summary-card-name').textContent = deck[cardIdx].name;
   $('summary-narrative').innerHTML = generateNarrative(currentCategory, cardIdx, drawnCards);
 
-  // Reset donate section — card faces
-  const wrap = $('card-interaction-area');
-  wrap.classList.remove('flipped');
-  void wrap.offsetWidth;
-  $('card-front').classList.remove('flipped');
-  $('card-back').classList.remove('flipped');
-  $('card-back').classList.add('hidden');
-  $('card-front').classList.remove('hidden');
+  // Reset donate section — State 1: sad card visible, QR component hidden
+  $('donate-sad-wrap').style.display = 'flex';
   $('donate-label-above').classList.remove('hidden');
-  $('qr-post-flip').classList.add('hidden');
+  $('donate-qr-component').style.display = 'none';
   $('qr-actions').classList.remove('hidden');
-  $('qr-happy-inline').classList.add('hidden');
+  $('qr-happy-inline').style.display = 'none';
+  $('qr-restart-only').style.display = 'none';
 
-  // Restore front face to Death card
-  $('card-front').innerHTML = `
-    <div class="state-a-hover-text" id="state-a-hover-text">
-      คลิกเพื่อสแกนเพื่อส่งต่อพลังบวกให้ผู้สร้างแอป
-    </div>
-    <img id="donate-sad-img" src="assets/donation/sad-card.png" alt="สนับสนุน" />
-  `;
-
-  // Show donate section (Death card starts in State A)
+  // Show donate section (sad card starts in State 1)
   $('donate-section').classList.remove('hidden');
   $('donate-section').classList.add('state-a');
 
-  // Reset choice state — buttons hidden until card flips, restart hidden
+  // Reset choice state — restart hidden
   choiceMade = false;
   $('restart-btn').classList.add('hidden');
 
   donationState = 'A';
-  wrap.onclick = onCardTap;
+  $('donate-sad-wrap').onclick = onCardTap;
 }
 
 /* ================================================
@@ -790,23 +777,18 @@ function showSummary() {
 function onCardTap() {
   if (donationState !== 'A') return;
 
-  // Flip card to QR back
-  $('card-front').classList.add('flipped');
-  $('card-back').classList.remove('hidden');
-  void $('card-back').offsetWidth;
-  $('card-back').classList.add('flipped');
+  // Show QR component directly — no flip animation
+  $('donate-sad-wrap').style.display = 'none';
+  $('donate-label-above').classList.add('hidden');
+  $('donate-qr-component').style.display = 'flex';
 
   donationState = 'B';
-  $('card-interaction-area').onclick = null;
+  $('donate-sad-wrap').onclick = null;
   $('donate-section').classList.remove('state-a');
-  $('donate-label-above').classList.add('hidden');
-
-  // Show the QR post-flip section with buttons
-  $('qr-post-flip').classList.remove('hidden');
 }
 
 function downloadQR() {
-  const qrImg = $('qr-image');
+  const qrImg = $('donate-qr-img');
   const canvas = document.createElement('canvas');
   canvas.width = qrImg.naturalWidth || qrImg.width || 300;
   canvas.height = qrImg.naturalHeight || qrImg.height || 300;
@@ -825,14 +807,16 @@ function downloadQR() {
    US7 — SAVE 5-CARD SUMMARY IMAGE + HAPPY CARD
    ================================================ */
 
-$('summary-save-btn').addEventListener('click', onSaveChoice);
+const summarySaveBtn = $('summary-save-btn');
+if (summarySaveBtn) summarySaveBtn.addEventListener('click', onSaveChoice);
 
 function onSaveChoice() {
   if (choiceMade) return;
   choiceMade = true;
-  $('qr-skip-btn').classList.add('hidden');
-  const btn = $('summary-save-btn');
-  btn.disabled = true;
+  const qrSkipBtn = $('qr-skip-btn');
+  if (qrSkipBtn) qrSkipBtn.classList.add('hidden');
+  const btn = summarySaveBtn;
+  if (btn) btn.disabled = true;
 
   saveSummaryImage()
     .then(() => {
@@ -844,7 +828,7 @@ function onSaveChoice() {
     })
     .finally(() => {
       showHappyInline();
-      btn.disabled = false;
+      if (btn) btn.disabled = false;
       $('restart-btn').classList.remove('hidden');
     });
 }
@@ -852,7 +836,7 @@ function onSaveChoice() {
 function onSkipChoice() {
   if (choiceMade) return;
   choiceMade = true;
-  $('summary-save-btn').classList.add('hidden');
+  if (summarySaveBtn) summarySaveBtn.classList.add('hidden');
   $('restart-btn').classList.remove('hidden');
 }
 
@@ -995,14 +979,13 @@ function resetToHome() {
   donationState = null;
   choiceMade = false;
   $('donate-section').classList.remove('state-a');
-  $('summary-save-btn').classList.add('hidden');
-  $('qr-skip-btn').classList.add('hidden');
-  $('qr-post-flip').classList.add('hidden');
+  $('donate-sad-wrap').style.display = 'flex';
+  $('donate-sad-wrap').onclick = null;
+  $('donate-label-above').classList.remove('hidden');
+  $('donate-qr-component').style.display = 'none';
   $('qr-actions').classList.remove('hidden');
-  $('qr-happy-inline').classList.add('hidden');
-  $('qr-happy-inline').querySelectorAll('img, .qr-happy-thanks, .qr-happy-sub')
-    .forEach(el => el.style.display = '');
-  $('qr-restart-only').classList.add('hidden');
+  $('qr-happy-inline').style.display = 'none';
+  $('qr-restart-only').style.display = 'none';
   showScreen('select');
 }
 
@@ -1018,20 +1001,22 @@ $('qr-save-btn').addEventListener('click', () => {
   if (donationState !== 'B') return;
   try { downloadQR(); } catch (_) {}
   $('qr-actions').classList.add('hidden');
-  $('qr-happy-inline').classList.remove('hidden');
+  $('qr-happy-inline').style.display = 'flex';
   donationState = 'C';
-  $('donate-restart-btn').addEventListener('click', resetToHome);
 });
 
 $('qr-skip-btn').addEventListener('click', () => {
   if (donationState !== 'B') return;
   $('qr-actions').classList.add('hidden');
-  $('qr-restart-only').classList.remove('hidden');
+  $('qr-restart-only').style.display = 'flex';
   donationState = 'C';
-  $('donate-restart-btn-skip').addEventListener('click', resetToHome);
 });
 
 /* ================================================
    INIT
    ================================================ */
 initStars();
+
+// Register donate restart button listeners once
+$('donate-restart-btn').addEventListener('click', resetToHome);
+$('donate-restart-btn-skip').addEventListener('click', resetToHome);

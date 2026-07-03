@@ -2,7 +2,7 @@
 
 **Feature Branch**: `003-mode-5card-summary`
 **Created**: 2026-06-26 | **Status**: Active
-**Updated**: 2026-07-03 | Donate section — after flip, user chooses "บันทึกรูปเพื่อสแกน" → happy card + thank text + เริ่มต้นใหม่; "ไม่สะดวกโอน" → sad card + "เค้าเสียใจนะ" text + เริ่มต้นใหม่; both paths end at เริ่มต้นใหม่
+**Updated**: 2026-07-03 | Donate section — after flip: 1 QR picture, 2 บันทึกรูปเพื่อสแกน button, 3 ไม่สะดวกโอน; "บันทึกรูปเพื่อสแกน" → happy card + thank text + เริ่มต้นใหม่; "ไม่สะดวกโอน" → sad card + "เค้าเสียใจนะ" + เริ่มต้นใหม่; both paths return to category select
 
 ## Overview
 
@@ -103,60 +103,78 @@ Pattern detection uses:
 
 ---
 
-### Card States (Single Card Component, 2 States)
+### State Flow
+
+```
+State 1 (Sad Card) → [tap card] → State 2 (QR + options)
+                                        │
+                    ┌───────────────────┴───────────────────┐
+                    ▼                                       ▼
+               State 3a                                State 3b
+         (QR save chosen)                         (skip chosen)
+```
+
+**There is no summary section after State 2.** State 2 immediately presents two always-visible options (`qr-save-btn` and `qr-skip-btn`). The user picks one path — State 3a OR State 3b — and that is the final terminal state of the donate section. **Clicking either button again after the first choice has no effect** — `donationState` guards prevent re-triggering.
+
+### Card States (Donate Section — 4 States)
 
 | State | What User Sees |
 |---|---|
-| A | Sad Card — front face (`sad-card.png`) |
-| B | QR Code — back face, after flip |
+| 1 | Sad Card — `sad-card.png`, tap to show QR |
+| 2 | QR Code + `qr-save-btn` + `qr-skip-btn` — shown directly below sad card after tap |
+| 3a | Happy card (`assets/happy/card-03.png`) + thank + sub-text + restart button |
+| 3b | Sad card (`assets/donation/sad-card.png`) + "เค้าเสียใจนะ" + restart button |
 
-**After flip (post-State B)**: two always-visible options below the QR:
-- `qr-save-btn` ("บันทึกรูปเพื่อสแกน") — saves QR + shows happy card + renders restart button
-- `qr-skip-btn` ("ไม่สะดวกโอน") — renders restart button directly below QR
+**No flip animation** — State 2 is shown as a standalone QR component rendered directly below the sad card container.
 
 ---
 
-### State A — Sad Card (Initial, Start Period)
+### State 1 — Sad Card (Initial, Start Period)
 
 - Display the sad tarot card image (`assets/donation/sad-card.png`) as the default state
-- **Start period**: the initial moment when the donate section first renders. During this period, `qr-save-btn` ("บันทึกรูปเพื่อสแกน") and "เริ่มใหม่" buttons are NOT rendered / NOT visible in the donate section. (These are separate from the summary screen's restart button.)
-- **"สนับสนุนค่าขนม"** text displayed ABOVE the sad card via `donate-label-above` — always visible during the start period and remains visible until the card flip animation begins. It is hidden via JS in `onCardTap()` when flip begins.
-- **Hover text**: `state-a-hover-text` element ("คลิกเพื่อสแกนเพื่อส่งต่อพลังบวกให้ผู้สร้างแอป") is **always in the DOM** (hardcoded in HTML). CSS handles show/hide: opacity 0 by default, transitions to opacity 1 on `.card-front:hover`. Text disappears when mouse leaves.
-- On click (of the card): trigger card flip animation → transition to State B
+- **Start period**: the initial moment when the donate section first renders. During this period, `qr-save-btn` ("บันทึกรูปเพื่อสแกน") and restart buttons are NOT rendered / NOT visible in the donate section. (These are separate from the summary screen's restart button.)
+- **"สนับสนุนค่าขนม"** text displayed ABOVE the sad card via `donate-label-above` — always visible during the start period and hidden via JS in `onCardTap()` when QR is shown.
+- **Hover text**: `state-a-hover-text` element ("คลิกเพื่อสแกนเพื่อส่งต่อพลังบวกให้ผู้สร้างแอป") is **always in the DOM** (hardcoded in HTML). CSS handles show/hide: opacity 0 by default, transitions to opacity 1 on `.donate-sad-wrap:hover`. Text disappears when mouse leaves.
+- On click (of the card): show QR component directly → transition to State 2
 
 ---
 
-### After Flip — QR Code + Options + User Choice
+### State 2 — QR Code Component + Options
 
-- Card flips (3D rotate animation) to reveal a static pre-uploaded QR code image (`assets/donation/qr-code.png`) on the back
-- **"สนับสนุนค่าขนม"** label hidden when flip begins (same as State A)
-- Below the QR image: two options displayed together (side by side or stacked):
-  - `qr-save-btn` — button labeled **"บันทึกรูปเพื่อสแกน"** — always visible (not hover-only)
-  - `qr-skip-btn` — small, low-emphasis text link **"ไม่สะดวกโอน"**
-- Next step: user will choose 1 of 2 options
+The QR component (`#donate-qr-component`) is rendered directly — no flip animation. The donate section shows:
+1. QR code image (`assets/donation/qr-code.png`) via `.donate-qr-img` inside `#donate-qr-component`
+2. `qr-save-btn` button labeled **"บันทึกรูปเพื่อสแกน"** — always visible (not hover-only)
+3. `qr-skip-btn` small, low-emphasis link **"ไม่สะดวกโอน"** — always visible
 
-#### User chooses "บันทึกรูปเพื่อสแกน":
-1. `downloadQR()` — save the QR code image to the user's device
-2. `showHappyCard()` — show happy tarot card (`card-03.png`)
-3. Show thank text below the happy card: "ขอบคุณที่สนับสนุน! ✨"
-4. Render `donate-restart-btn` ("เริ่มต้นใหม่") below the thank text
-5. Click `donate-restart-btn` → `resetToHome()` → category selection
+**"สนับสนุนค่าขนม"** label hidden when sad card is tapped (same as State 1).
 
-#### User chooses "ไม่สะดวกโอน":
-1. Show sad tarot card (`sad-card.png`) — replaces QR code view
-2. Show sad text below the sad card: "เค้าเสียใจนะ"
-3. Render `donate-restart-btn` ("เริ่มต้นใหม่") below the sad text
+User then chooses one of two paths:
+
+#### State 3a — User chooses "บันทึกรูปเพื่อสแกน":
+1. `downloadQR()` — save QR code image to device
+2. Show happy tarot card (`assets/happy/card-03.png`) via `#qr-happy-inline`
+3. Show thank text: **"ขอบคุณที่สนับสนุนนะ"**
+4. Show sub-text below: **"พลังบวกได้รับการส่งต่อแล้ว\nให้พลังนั้นนำทางคุณไปต่อ 💛"**
+5. Render `donate-restart-btn` (`#donate-restart-btn`) labeled **"เริ่มต้นใหม่"**
+6. Click `donate-restart-btn` → `resetToHome()` → category selection
+- `qr-skip-btn` is ignored once State 3a is entered (via `donationState !== 'B'` guard)
+
+#### State 3b — User chooses "ไม่สะดวกโอน":
+1. Show sad tarot card (`assets/donation/sad-card.png`) via `#qr-restart-only` — replaces QR component
+2. Show text: **"เค้าเสียใจนะ"**
+3. Render `donate-restart-btn` (`#donate-restart-btn-skip`) labeled **"เริ่มต้นใหม่"**
 4. Click `donate-restart-btn` → `resetToHome()` → category selection
+- `qr-save-btn` is ignored once State 3b is entered (via `donationState !== 'B'` guard)
 
 ---
 
 ### Restart / Exit Flow
 
 - `donate-restart-btn` ("เริ่มต้นใหม่") is rendered in two scenarios:
-  - After "บันทึกรูปเพื่อสแกน" is clicked (shown below the thank text, after happy card)
-  - After "ไม่สะดวกโอน" is clicked (shown below the sad text, after sad card)
-- Both options via `resetToHome()` → category selection
-- `qr-save-btn` and `qr-skip-btn` are always visible in the QR state — no hover required
+  - State 3a: after `qr-save-btn` is clicked (`#donate-restart-btn`, below the sub-text)
+  - State 3b: after `qr-skip-btn` is clicked (`#donate-restart-btn-skip`, below the sad text)
+- Both via `resetToHome()` → category selection
+- `qr-save-btn` and `qr-skip-btn` are always visible in State 2 — no hover required
 
 ---
 
@@ -171,16 +189,18 @@ Pattern detection uses:
 
 ### Acceptance Criteria
 
-- Given State A, when user is in the start period (before any interaction with the sad card), `qr-save-btn` and `donate-restart-btn` are NOT visible in the donate section
-- Given State A, when user hovers the sad card, `state-a-hover-text` appears above the image via CSS opacity transition
-- Given State A, when user clicks the sad card, then card flips to show QR code (State B)
-- Given post-flip State B, `qr-save-btn` ("บันทึกรูปเพื่อสแกน") is always visible (not hover-only)
-- Given post-flip State B, `qr-skip-btn` ("ไม่สะดวกโอน") is always visible
-- Given post-flip State B, when user clicks `qr-save-btn`, then QR is saved to device AND Happy Card is shown
-- Given post-flip State B, when user clicks `qr-save-btn`, then thank text "ขอบคุณที่สนับสนุน! ✨" appears below the happy card
-- Given post-flip State B, when user clicks `qr-save-btn`, then `donate-restart-btn` ("เริ่มต้นใหม่") appears below the thank text
-- Given post-flip State B, when user clicks `qr-skip-btn`, then sad card ("เค้าเสียใจนะ") is shown and `donate-restart-btn` ("เริ่มต้นใหม่") appears below the sad text
-- Given State B, when user clicks `donate-restart-btn` (after either path), app navigates back to category selection via `resetToHome()`
+- Given State 1, when user is in the start period (before any interaction with the sad card), `qr-save-btn` and `donate-restart-btn` are NOT visible in the donate section
+- Given State 1, when user hovers the sad card, `state-a-hover-text` appears above the image via CSS opacity transition
+- Given State 1, when user clicks the sad card, then QR component `#donate-qr-component` is shown (State 2) with no flip animation
+- Given State 2, `qr-save-btn` ("บันทึกรูปเพื่อสแกน") is always visible (not hover-only)
+- Given State 2, `qr-skip-btn` ("ไม่สะดวกโอน") is always visible
+- Given State 3a, when user clicks `qr-save-btn`, then QR is saved to device AND happy card panel `#qr-happy-inline` is shown
+- Given State 3a, when user clicks `qr-save-btn`, then sub-text "พลังบวกได้รับการส่งต่อแล้ว\nให้พลังนั้นนำทางคุณไปต่อ 💛" appears below the thank text "ขอบคุณที่สนับสนุนนะ"
+- Given State 3a, when user clicks `qr-save-btn`, then `donate-restart-btn` ("เริ่มต้นใหม่") appears below the sub-text
+- Given State 3b, when user clicks `qr-skip-btn`, then sad card panel `#qr-restart-only` is shown with text "เค้าเสียใจนะ" and `donate-restart-btn` ("เริ่มต้นใหม่") appears below
+- Given State 3a or 3b, when user clicks `donate-restart-btn`, app navigates back to category selection via `resetToHome()`
+- Given State 3a, clicking `qr-skip-btn` again has no effect; the 3a panel remains displayed
+- Given State 3b, clicking `qr-save-btn` again has no effect; the 3b panel remains displayed
 - The QR code is a fixed static asset — no payment gateway, no verification, no slip upload
 
 ## Save 5-Card Summary Image

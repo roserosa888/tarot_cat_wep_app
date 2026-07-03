@@ -1,0 +1,12 @@
+https://github.com/github/spec-kit
+ <div class="qr-happy-inline hidden" id="qr-happy-inline">
+                <img src="assets/happy/card-03.png" alt="ไพ่มงคล" />
+                <div class="qr-happy-thanks">ขอบคุณที่สนับสนุน! ✨</div>
+                <div class="qr-happy-sub">พลังบวกได้รับการส่งต่อแล้ว<br />ให้พลังนั้นนำทางคุณไปต่อ 💛</div>
+                <button class="donate-restart-btn" id="donate-restart-btn">เริ่มต้นใหม่</button>
+              </div>
+              <div class="qr-restart-only hidden" id="qr-restart-only">
+                <img src="assets/donation/sad-card.png" alt="เค้าเสียใจนะ" />
+                <div class="qr-sad-text">เค้าเสียใจนะ</div>
+                <button class="donate-restart-btn" id="donate-restart-btn-skip">เริ่มต้นใหม่</button>
+              </div>

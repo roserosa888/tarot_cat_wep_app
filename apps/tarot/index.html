@@ -88,38 +88,35 @@
 
         <div class="donate-section" id="donate-section">
           <div class="donate-label-above" id="donate-label-above">สนับสนุนค่าขนม</div>
-          <div class="card-interaction-area" id="card-interaction-area">
-            <div class="card-face card-front" id="card-front">
-              <div class="state-a-hover-text" id="state-a-hover-text">
-                คลิกเพื่อสแกนเพื่อส่งต่อพลังบวกให้ผู้สร้างแอป
-              </div>
-              <img id="donate-sad-img" src="assets/donation/sad-card.png" alt="สนับสนุน" />
+          <!-- State 1: Sad card — tap to reveal QR -->
+          <div class="donate-sad-wrap" id="donate-sad-wrap" style="display:flex">
+            <div class="state-a-hover-text" id="state-a-hover-text">
+              คลิกเพื่อสแกนเพื่อส่งต่อพลังบวกให้ผู้สร้างแอป
             </div>
-            <div class="card-face card-back hidden" id="card-back">
-              <img class="qr-image" src="assets/donation/qr-code.png" alt="รหัสชำระเงิน" />
+            <img id="donate-sad-img" src="assets/donation/sad-card.png" alt="สนับสนุน" />
+          </div>
+          <!-- State 2: QR component — sibling of sad-wrap, no animation -->
+          <div class="donate-qr-component" id="donate-qr-component" style="display:none">
+            <div class="qr-img-wrap">
+              <img id="donate-qr-img" class="qr-image" src="assets/donation/qr-code.png" alt="รหัสชำระเงิน" />
             </div>
-            <div id="qr-post-flip" class="hidden">
-              <div class="qr-wrap" id="qr-wrap">
-                <!-- QR image is on the card-back face, this area is for layout spacing -->
-              </div>
-              <div class="qr-actions" id="qr-actions">
-                <button class="qr-save-btn" id="qr-save-btn">
-                  บันทึกรูปเพื่อสแกน
-                </button>
-                <button class="qr-skip-btn" id="qr-skip-btn">ไม่สะดวกโอน</button>
-              </div>
-              <div class="qr-happy-inline hidden" id="qr-happy-inline">
-                <img src="assets/happy/card-03.png" alt="ไพ่มงคล" />
-                <div class="qr-happy-thanks">ขอบคุณที่สนับสนุน! ✨</div>
-                <div class="qr-happy-sub">พลังบวกได้รับการส่งต่อแล้ว<br />ให้พลังนั้นนำทางคุณไปต่อ 💛</div>
-                <button class="donate-restart-btn" id="donate-restart-btn">เริ่มต้นใหม่</button>
-              </div>
-              <div class="qr-restart-only hidden" id="qr-restart-only">
-                <img src="assets/donation/sad-card.png" alt="เค้าเสียใจนะ" />
-                <div class="qr-sad-text">เค้าเสียใจนะ</div>
-                <button class="donate-restart-btn" id="donate-restart-btn-skip">เริ่มต้นใหม่</button>
-              </div>
+            <div class="qr-actions" id="qr-actions">
+              <button class="qr-save-btn" id="qr-save-btn">บันทึกรูปเพื่อสแกน</button>
+              <button class="qr-skip-btn" id="qr-skip-btn">ไม่สะดวกโอน</button>
             </div>
+          </div>
+          <!-- State 3a: QR save chosen — sibling, independent -->
+          <div class="qr-happy-inline" id="qr-happy-inline" style="display:none">
+            <img src="assets/happy/card-03.png" alt="ไพ่มงคล" />
+            <div class="qr-happy-thanks">ขอบคุณที่สนับสนุนนะ</div>
+            <div class="qr-happy-sub">พลังบวกได้รับการส่งต่อแล้ว<br />ให้พลังนั้นนำทางคุณไปต่อ 💛</div>
+            <button class="donate-restart-btn" id="donate-restart-btn">เริ่มต้นใหม่</button>
+          </div>
+          <!-- State 3b: Skip chosen — sibling, independent -->
+          <div class="qr-restart-only" id="qr-restart-only" style="display:none">
+            <img src="assets/donation/sad-card.png" alt="เค้าเสียใจนะ" />
+            <div class="qr-sad-text">เค้าเสียใจนะ</div>
+            <button class="donate-restart-btn" id="donate-restart-btn-skip">เริ่มต้นใหม่</button>
           </div>
         </div>
 

@@ -414,11 +414,11 @@ body {
   margin: 1.5rem 0 1rem;
 }
 
-/* "สนับสนุนค่าขนม" — always visible above the card, before flip */
+/* "สนับสนุนค่าขนม" — always visible above the card */
 .donate-label-above {
   font-size: 0.88rem;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--gold);
   text-align: center;
   margin-bottom: 0.4rem;
   opacity: 1;
@@ -444,18 +444,19 @@ body {
   text-align: center;
 }
 
-/* Flip container */
-.card-interaction-area {
-  perspective: 1000px;
+/* Sad card container — simple, no flip */
+.donate-sad-wrap {
   cursor: pointer;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   position: relative;
   width: 200px;
   margin: 0 auto;
 }
 
 /* Glow behind card */
-.card-interaction-area::before {
+.donate-sad-wrap::before {
   content: '';
   position: absolute;
   inset: -20px;
@@ -471,26 +472,7 @@ body {
   50%       { opacity: 1; transform: scale(1.1); }
 }
 
-/* Both card faces share backface-visibility */
-.card-face {
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
-  width: 200px;
-  height: 273px;
-}
-
-/* Front face: sad tarot card image */
-.card-front {
-  transform: rotateY(0deg);
-}
-
-.card-front.flipped {
-  transform: rotateY(180deg);
-  opacity: 0;
-}
-
-/* State A hover text — overlaid ON TOP of card, prominent */
+/* State 1 hover text — overlaid on sad card */
 .state-a-hover-text {
   position: absolute;
   bottom: 1rem;
@@ -523,30 +505,12 @@ body {
   border-top-color: rgba(0, 0, 0, 0.85);
 }
 
-/* State A: show hover text when front face is hovered */
-.card-front:hover .state-a-hover-text {
+.donate-sad-wrap:hover .state-a-hover-text {
   opacity: 1;
 }
 
-/* Back face: QR code — positioned absolutely so front faces it */
-.card-back {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 200px;
-  height: 273px;
-  transform: rotateY(-180deg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.card-back.flipped {
-  transform: rotateY(0deg);
-}
-
-/* QR buttons section — fixed below the card, does not flip */
-#qr-post-flip {
+/* State 2: QR component — shown directly, no animation */
+#donate-qr-component {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -554,13 +518,14 @@ body {
   margin-top: 0.5rem;
 }
 
-#qr-post-flip.hidden {
+#donate-qr-component.hidden {
   display: none;
 }
 
-.qr-wrap {
-  /* spacer only — QR image lives on .card-back */
-  display: none;
+.qr-img-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Card image inside front face */
@@ -1045,11 +1010,9 @@ body {
   .category-grid { grid-template-columns: repeat(3, 1fr); gap: 0.7rem; }
   .category-card { padding: 1.1rem 0.5rem; font-size: 0.88rem; }
   .question-card { padding: 1.5rem 1.2rem; }
-  .card-interaction-area { width: 170px; }
-  .card-back { width: 170px; height: 232px; }
+  .donate-sad-wrap { width: 170px; }
   .state-a-hover-text { font-size: 0.82rem; padding: 0.5rem 0.85rem; bottom: 0.75rem; }
   #summary-card-img, #donate-sad-img { width: 170px; }
-  .card-face { width: 170px; height: 232px; }
   .summary-narrative { padding: 1.3rem; }
   #happy-final-img { width: 170px; }
   /* US7 mobile */
