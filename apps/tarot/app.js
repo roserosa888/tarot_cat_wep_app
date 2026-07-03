@@ -762,7 +762,7 @@ function showSummary() {
   // Restore front face to Death card
   $('card-front').innerHTML = `
     <div class="state-a-hover-text" id="state-a-hover-text">
-      คลิกสแกนเพื่อส่งต่อพลังบวกให้ผู้สร้างแอป
+      คลิกเพื่อสแกนเพื่อส่งต่อพลังบวกให้ผู้สร้างแอป
     </div>
     <img id="donate-sad-img" src="assets/donation/sad-card.png" alt="สนับสนุน" />
   `;
@@ -819,37 +819,6 @@ function downloadQR() {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-}
-
-function showHappyCard() {
-  const front = $('card-front');
-  const back  = $('card-back');
-
-  // Replace front face with happy card
-  front.innerHTML = `
-    <img id="happy-final-img" src="assets/happy/card-03.png" alt="ไพ่ทาโร่ต์มงคล" />
-    <div class="happy-thanks-heading">ขอบคุณที่สนับสนุน! ✨</div>
-    <div class="happy-thanks-sub">
-      พลังบวกได้รับการส่งต่อแล้ว<br />
-      ให้พลังนั้นนำทางคุณไปต่อ 💛
-    </div>
-    <button class="donate-restart-btn" id="donate-restart-btn">ปุ่มเริ่มต้นใหม่</button>
-  `;
-
-  // Wire the new restart button to return to category selection
-  $('donate-restart-btn').addEventListener('click', resetToHome);
-
-  // Flip card back to front face (State D)
-  back.classList.remove('flipped');
-  void back.offsetHeight;
-  back.classList.add('flipped');
-  void front.offsetHeight;
-  front.classList.remove('flipped');
-  back.classList.add('hidden');
-
-  donationState = 'D';
-  $('card-interaction-area').style.cursor = 'default';
-  $('card-interaction-area').onclick = null;
 }
 
 /* ================================================
@@ -1033,6 +1002,7 @@ function resetToHome() {
   $('qr-happy-inline').classList.add('hidden');
   $('qr-happy-inline').querySelectorAll('img, .qr-happy-thanks, .qr-happy-sub')
     .forEach(el => el.style.display = '');
+  $('qr-restart-only').classList.add('hidden');
   showScreen('select');
 }
 
@@ -1056,15 +1026,9 @@ $('qr-save-btn').addEventListener('click', () => {
 $('qr-skip-btn').addEventListener('click', () => {
   if (donationState !== 'B') return;
   $('qr-actions').classList.add('hidden');
-  $('qr-happy-inline').classList.remove('hidden');
-  const img = $('qr-happy-inline').querySelector('img');
-  const thanks = $('qr-happy-inline').querySelector('.qr-happy-thanks');
-  const sub = $('qr-happy-inline').querySelector('.qr-happy-sub');
-  if (img) img.style.display = 'none';
-  if (thanks) thanks.style.display = 'none';
-  if (sub) sub.style.display = 'none';
+  $('qr-restart-only').classList.remove('hidden');
   donationState = 'C';
-  $('donate-restart-btn').addEventListener('click', resetToHome);
+  $('donate-restart-btn-skip').addEventListener('click', resetToHome);
 });
 
 /* ================================================

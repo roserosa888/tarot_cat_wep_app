@@ -2,7 +2,7 @@
 
 **Feature Branch**: `003-mode-5card-summary`
 **Created**: 2026-06-26 | **Status**: Active
-**Updated**: 2026-07-02 | Simplified Donate section — removed States C/D, "บันทึกรูปเพื่อสแกน" always visible after flip, "ไม่สะดวกโอน" shows restart button directly
+**Updated**: 2026-07-03 | Donate section — after flip, user chooses "บันทึกรูปเพื่อสแกน" → happy card + thank text + เริ่มต้นใหม่; "ไม่สะดวกโอน" → sad card + "เค้าเสียใจนะ" text + เริ่มต้นใหม่; both paths end at เริ่มต้นใหม่
 
 ## Overview
 
@@ -15,7 +15,7 @@ A Thai-language tarot web app where users answer 10 binary (A/B) fork questions 
 - **US3 — Receive a Single Outcome Card** (P1): After Q10, score 0–10 maps to one of 5 outcome cards per category. Card image (existing PNG asset) reveals with animation. Acceptance: exactly 1 card shown; correct card for score range; animated reveal.
 - **US4 — Read a Personalized Narrative** (P2): The narrative synthesizes the user's answer pattern (streaks, balance, dominant choice) into a life-reading paragraph for the category. Acceptance: narrative references actual A/B pattern; unique per user.
 - **US5 — Restart and Try Another Category** (P3): User can restart at any time and choose a different category. Acceptance: restart button visible on summary; returns to category select.
-- **US6 — Donate Section** (P2): After viewing the result card, a sad tarot card (`sad-card.png`) is displayed below the summary. Tapping it flips to a QR code (3D rotate animation). After flip, the QR is shown with two always-visible options: "บันทึกรูปเพื่อสแกน" (saves QR + shows happy card + restart button) and "ไม่สะดวกโอน" (shows restart button directly). Both paths return to category selection via `resetToHome()`.
+- **US6 — Donate Section** (P2): After viewing the result card, a sad tarot card (`sad-card.png`) is displayed below the summary. Tapping it flips to a QR code (3D rotate animation). After flip, the QR is shown with two always-visible options: "บันทึกรูปเพื่อสแกน" (saves QR → shows happy card + thank text → เริ่มต้นใหม่ button) and "ไม่สะดวกโอน" (shows sad card + "เค้าเสียใจนะ" text → เริ่มต้นใหม่ button). Both paths return to category selection via `resetToHome()`.
 - **US7 — Save 5-Card Summary Image** (P1): When user taps "บันทึกรูปเพื่อสแกน QR code" on the 5-card summary result screen, the system simultaneously saves the summary image to the user's device and shows a happy card on the frontend without a page reload. On desktop browsers, the image downloads to the user's Downloads folder. On mobile (iOS Safari / Android Chrome), the image saves to the device gallery; if direct save is unsupported, a fallback opens the image for long-press save with user guidance.
 
 ## Scoring System
@@ -126,31 +126,35 @@ Pattern detection uses:
 
 ---
 
-### After Flip — QR Code + Options
+### After Flip — QR Code + Options + User Choice
 
 - Card flips (3D rotate animation) to reveal a static pre-uploaded QR code image (`assets/donation/qr-code.png`) on the back
 - **"สนับสนุนค่าขนม"** label hidden when flip begins (same as State A)
 - Below the QR image: two options displayed together (side by side or stacked):
   - `qr-save-btn` — button labeled **"บันทึกรูปเพื่อสแกน"** — always visible (not hover-only)
   - `qr-skip-btn` — small, low-emphasis text link **"ไม่สะดวกโอน"**
+- Next step: user will choose 1 of 2 options
 
-#### Click "บันทึกรูปเพื่อสแกน":
-1. `downloadQR()` — save the QR code image to the user's device (canvas → anchor download)
-2. `showHappyCard()` — show happy tarot card (`card-03.png`) with heading "ขอบคุณที่สนับสนุน! ✨"
-3. Render `donate-restart-btn` ("ปุ่มเริ่มต้นใหม่") below the happy card
+#### User chooses "บันทึกรูปเพื่อสแกน":
+1. `downloadQR()` — save the QR code image to the user's device
+2. `showHappyCard()` — show happy tarot card (`card-03.png`)
+3. Show thank text below the happy card: "ขอบคุณที่สนับสนุน! ✨"
+4. Render `donate-restart-btn` ("เริ่มต้นใหม่") below the thank text
+5. Click `donate-restart-btn` → `resetToHome()` → category selection
+
+#### User chooses "ไม่สะดวกโอน":
+1. Show sad tarot card (`sad-card.png`) — replaces QR code view
+2. Show sad text below the sad card: "เค้าเสียใจนะ"
+3. Render `donate-restart-btn` ("เริ่มต้นใหม่") below the sad text
 4. Click `donate-restart-btn` → `resetToHome()` → category selection
-
-#### Click "ไม่สะดวกโอน":
-1. Render `donate-restart-btn` ("ปุ่มเริ่มต้นใหม่") below the QR image (no happy card)
-2. Click `donate-restart-btn` → `resetToHome()` → category selection
 
 ---
 
 ### Restart / Exit Flow
 
-- `donate-restart-btn` ("ปุ่มเริ่มต้นใหม่") is rendered in two scenarios:
-  - After "บันทึกรูปเพื่อสแกน" is clicked (shown below happy card)
-  - After "ไม่สะดวกโอน" is clicked (shown below QR image)
+- `donate-restart-btn` ("เริ่มต้นใหม่") is rendered in two scenarios:
+  - After "บันทึกรูปเพื่อสแกน" is clicked (shown below the thank text, after happy card)
+  - After "ไม่สะดวกโอน" is clicked (shown below the sad text, after sad card)
 - Both options via `resetToHome()` → category selection
 - `qr-save-btn` and `qr-skip-btn` are always visible in the QR state — no hover required
 
@@ -173,8 +177,9 @@ Pattern detection uses:
 - Given post-flip State B, `qr-save-btn` ("บันทึกรูปเพื่อสแกน") is always visible (not hover-only)
 - Given post-flip State B, `qr-skip-btn` ("ไม่สะดวกโอน") is always visible
 - Given post-flip State B, when user clicks `qr-save-btn`, then QR is saved to device AND Happy Card is shown
-- Given post-flip State B, when user clicks `qr-save-btn`, then `donate-restart-btn` ("ปุ่มเริ่มต้นใหม่") appears below the happy card
-- Given post-flip State B, when user clicks `qr-skip-btn`, then `donate-restart-btn` ("ปุ่มเริ่มต้นใหม่") appears below the QR image
+- Given post-flip State B, when user clicks `qr-save-btn`, then thank text "ขอบคุณที่สนับสนุน! ✨" appears below the happy card
+- Given post-flip State B, when user clicks `qr-save-btn`, then `donate-restart-btn` ("เริ่มต้นใหม่") appears below the thank text
+- Given post-flip State B, when user clicks `qr-skip-btn`, then sad card ("เค้าเสียใจนะ") is shown and `donate-restart-btn` ("เริ่มต้นใหม่") appears below the sad text
 - Given State B, when user clicks `donate-restart-btn` (after either path), app navigates back to category selection via `resetToHome()`
 - The QR code is a fixed static asset — no payment gateway, no verification, no slip upload
 
